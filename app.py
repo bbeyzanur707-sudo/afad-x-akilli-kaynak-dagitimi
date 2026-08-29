@@ -23,7 +23,7 @@ st.info(
 # --------------------------------------------------
 csv_path = "data/regions.csv"
 
-# Eğer data/regions.csv dosyası yoksa uygulamanın çökmemesi için otomatik örnek veri oluşturur
+# Eğer data/regions.csv dosyası yoksa otomatik örnek veri oluşturur
 if not os.path.exists(csv_path):
     os.makedirs("data", exist_ok=True)
     sample_data = {
@@ -33,12 +33,12 @@ if not os.path.exists(csv_path):
         "damage_ratio": [0.65, 0.20, 0.45, 0.10],
         "displaced":,
         "injured":,
-        "road_access": [0.4, 0.9, 0.6, 1.0], # 0: kapalı, 1: açık
-        "hospital_capacity": [0.2, 0.8, 0.5, 0.9], # 0: yetersiz, 1: tam kapasite
+        "road_access": [0.4, 0.9, 0.6, 1.0], 
+        "hospital_capacity": [0.2, 0.8, 0.5, 0.9], 
         "water_l":,
         "meals":,
         "blankets":,
-        "medicine": [400, 50, 200, 30]
+        "medicine": [1200, 300, 800, 50]
     }
     pd.DataFrame(sample_data).to_csv(csv_path, index=False)
 
@@ -58,9 +58,6 @@ medicine = st.sidebar.number_input("İlaç paketi", min_value=0, value=500, step
 # GELİŞTİRİLMİŞ KAYNAK DAĞITIM FONKSİYONU
 # --------------------------------------------------
 def allocate_resources(total, demand):
-    """
-    Mevcut kaynağı ihtiyaca göre oransal olarak dağıtır. Sıfıra bölünme hatasını engeller.
-    """
     demand = demand.clip(lower=0)
     total_demand = demand.sum()
     
@@ -73,13 +70,12 @@ def allocate_resources(total, demand):
 # --------------------------------------------------
 # ÖNCELİK HESAPLAMA
 # --------------------------------------------------
-# Sütun isimlerinin doğruluğundan emin olmak için kontrol
 required_columns = ["earthquake_intensity", "damage_ratio", "displaced", "population", "road_access", "hospital_capacity"]
 if all(col in df.columns for col in required_columns):
     df["priority_score"] = (
         0.30 * (df["earthquake_intensity"] / 8.5).clip(0, 1)
         + 0.28 * df["damage_ratio"].clip(0, 1)
-        + 0.20 * ((df["displaced"] / df["population"].replace(0, 1)) / 0.25).clip(0, 1) # Sıfıra bölme koruması
+        + 0.20 * ((df["displaced"] / df["population"].replace(0, 1)) / 0.25).clip(0, 1) 
         + 0.12 * (1 - df["road_access"].clip(0, 1))
         + 0.10 * (1 - df["hospital_capacity"].clip(0, 1))
     )
@@ -102,7 +98,7 @@ df["allocated_medicine"] = allocate_resources(medicine, df["medicine"])
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Bölge Sayısı", len(df))
 col2.metric("Toplam Yerinden Olan", f"{df['displaced'].sum():,}")
-col3.metric("En Kritik Bölge", df.iloc[0]["region"] if not df.empty else "Bilinmiyor")
+col3.metric("En Kritik Bölge", df.loc[0, "region"] if not df.empty else "Bilinmiyor")
 col4.metric("Ortalama Öncelik Skoru", f"{df['priority_score'].mean():.2f}" if not df.empty else "0.00")
 
 # Stok Yetersizlik Uyarı Sistemi
