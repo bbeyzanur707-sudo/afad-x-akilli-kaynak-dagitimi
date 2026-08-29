@@ -23,7 +23,7 @@ st.info(
 # --------------------------------------------------
 csv_path = "data/regions.csv"
 
-# Eğer data/regions.csv dosyası yoksa otomatik örnek veri oluşturur
+# Eğer veri dosyası yoksa uygulamanın çökmemesi için otomatik örnek veri oluşturur
 if not os.path.exists(csv_path):
     os.makedirs("data", exist_ok=True)
     sample_data = {
@@ -38,7 +38,7 @@ if not os.path.exists(csv_path):
         "water_l":,
         "meals":,
         "blankets":,
-        "medicine": [1200, 300, 800, 50]
+        "medicine": [400, 50, 200, 30]
     }
     pd.DataFrame(sample_data).to_csv(csv_path, index=False)
 
@@ -101,9 +101,8 @@ col2.metric("Toplam Yerinden Olan", f"{df['displaced'].sum():,}")
 col3.metric("En Kritik Bölge", df.loc[0, "region"] if not df.empty else "Bilinmiyor")
 col4.metric("Ortalama Öncelik Skoru", f"{df['priority_score'].mean():.2f}" if not df.empty else "0.00")
 
-# Stok Yetersizlik Uyarı Sistemi
 if water < df["water_l"].sum() or meals < df["meals"].sum():
-    st.warning("⚠️ Dikkat: Mevcut kaynaklar, toplam bölge ihtiyaçlarını tam olarak karşılayamıyor! Oransal dağıtım yapıldı.")
+    st.warning("⚠️ Dikkat: Mevcut kaynaklar toplam ihtiyacı karşılamıyor! Oransal dağıtım yapıldı.")
 
 # --------------------------------------------------
 # TABLOLAR VE GÖSTERİMLER
@@ -164,8 +163,6 @@ Sistem, afet bölgelerinin aciliyet durumunu 5 ana kriterin ağırlıklandırıl
 3. **Yerinden Olan Nüfus Oranı (%20)**
 4. **Yol Erişilebilirliği Kısıtı (%12)**
 5. **Hastane Kapasitesi Yetersizliği (%10)**
-
-Hesaplanan öncelik skoruna göre lojistik kaynaklar (Su, Yemek, Battaniye, İlaç) bölgelerin ihtiyaç oranına göre adil şekilde paylaştırılır.
 """)
 
 # --------------------------------------------------
