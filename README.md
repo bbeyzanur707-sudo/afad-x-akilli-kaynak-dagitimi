@@ -47,22 +47,24 @@ Sistem üç temel faktörü kullanmaktadır:
 
 ### Afet Şiddeti
 
-%50 ağırlık
+**%50 ağırlık**
 
 ### Nüfus
 
-%20 ağırlık
+**%20 ağırlık**
 
 ### İhtiyaç Miktarı
 
-%30 ağırlık
+**%30 ağırlık**
 
-Toplam:
+Toplam ağırlık **%100'dür.**
+
+Öncelik skoru aşağıdaki formül ile hesaplanmaktadır:
 
 ```text
-Öncelik =
+Öncelik Skoru =
 (Afet Şiddeti × 0.50)
 +
 (Nüfus × 0.20)
 +
-(İhtiyaç × 0.30)
+(İhtiyaç Miktarı × 0.30)
