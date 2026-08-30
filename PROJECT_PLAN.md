@@ -1,74 +1,166 @@
-# Afet-X Proje Planı
+# 🚨 Afet-X Akıllı Kaynak Dağıtımı
 
-## 1. Proje Vizyonu
+## 📌 Proje Tanımı
 
-Afet-X'in amacı afet anında karar vericilere kaynak dağıtımı konusunda hızlı ve veri destekli öneriler sunmaktır.
+Afet-X, afet bölgelerinde mevcut kaynakların ihtiyaç ve afet
+şiddetine göre daha hızlı ve verimli dağıtılmasına yardımcı olan
+akıllı bir karar destek sistemidir.
 
-## 2. Mevcut Sistem
+Sistem, farklı afet bölgelerinden alınan verileri analiz ederek
+hangi bölgenin daha yüksek önceliğe sahip olduğunu belirler.
 
-Mevcut sistem;
+---
 
-- Bölge ekleme
+# 🎯 Projenin Amacı
+
+Afet sırasında;
+
+- Kaynakların yetersiz kalmasını önlemek
+- Kritik bölgeleri hızlı şekilde belirlemek
+- Kaynakların dengeli dağıtılmasını sağlamak
+- Karar verme sürecini hızlandırmak
+- Veri temelli kaynak dağıtımı yapmak
+
+amaçlanmaktadır.
+
+---
+
+# 🧠 Sistem Nasıl Çalışır?
+
+Kullanıcı sisteme aşağıdaki bilgileri girer:
+
+1. Toplam kullanılabilir kaynak
+2. Afet bölgesi
+3. Afet şiddeti
+4. Bölge nüfusu
+5. Bölgenin ihtiyaç miktarı
+
+Sistem bu verileri analiz eder.
+
+Ardından her bölge için bir
+**öncelik puanı** oluşturur.
+
+---
+
+# 📊 Öncelik Hesaplama
+
+Sistemde öncelik puanı üç temel faktöre göre hesaplanmaktadır.
+
+### Afet Şiddeti
+
+Ağırlık:
+
+**%50**
+
+Afetin bölge üzerindeki etkisini temsil eder.
+
+### Nüfus
+
+Ağırlık:
+
+**%20**
+
+Daha fazla kişinin etkilendiği bölgelerin
+önceliğinin belirlenmesine katkı sağlar.
+
+### İhtiyaç
+
+Ağırlık:
+
+**%30**
+
+Bölgedeki kaynak ihtiyacını temsil eder.
+
+---
+
+# 🚦 Öncelik Seviyeleri
+
+| Puan | Seviye |
+|---|---|
+| 75-100 | 🔴 Kritik |
+| 50-74 | 🟠 Acil |
+| 25-49 | 🟡 Orta |
+| 0-24 | 🟢 Düşük |
+
+---
+
+# 💰 Akıllı Kaynak Dağıtımı
+
+Sistem toplam kullanılabilir kaynağı,
+bölgelerin öncelik puanlarına göre dağıtır.
+
+Örneğin:
+
+Toplam kaynak:
+
+**100.000**
+
+olduğunda sistem bölgelerin öncelik seviyelerini
+hesaplayarak her bölge için önerilen kaynak miktarını
+oluşturur.
+
+---
+
+# 🤖 Akıllı Sistem Önerisi
+
+Sistem analiz sonucunda en yüksek önceliğe sahip bölgeyi
+belirler.
+
+Örneğin:
+
+> Hatay bölgesi kritik önceliktedir.
+> Öncelik puanı 91/100.
+> Kaynakların önemli bir bölümünün bu bölgeye
+> yönlendirilmesi önerilmektedir.
+
+Bu özellik karar vericiye hızlı bir özet sunmayı amaçlar.
+
+---
+
+# 🖥️ Kullanıcı Arayüzü
+
+Sistemde:
+
+- Kaynak giriş alanı
+- Afet bölgesi ekleme
 - Afet şiddeti girişi
 - Nüfus girişi
 - İhtiyaç girişi
-- Öncelik hesaplama
-- Kaynak dağıtımı
-- Kritik bölge belirleme
+- Analiz butonu
+- Öncelik puanı
+- Kaynak dağılımı
+- Kritik bölge göstergesi
+- Akıllı sistem önerisi
 
-özelliklerine sahiptir.
+bulunmaktadır.
 
-## 3. Önceliklendirme
+---
 
-Sistem aşağıdaki ağırlıkları kullanır:
+# 🛠️ Kullanılan Teknolojiler
 
-Afet şiddeti = %50
+- Python
+- Flask
+- HTML
+- CSS
+- JavaScript
+- GitHub
+- Render
 
-Nüfus = %20
+---
 
-İhtiyaç = %30
+# 📁 Proje Dosya Yapısı
 
-Bu değerler kullanılarak her bölge için 0-100 arasında öncelik puanı oluşturulur.
+```text
+afet-x-akilli-kaynak-dagitimi/
 
-## 4. Kaynak Dağıtımı
-
-Toplam kaynak, bölgelerin öncelik puanlarına göre oransal olarak dağıtılır.
-
-En yüksek önceliğe sahip bölge en yüksek kaynak payını alır.
-
-## 5. Gelecek Aşamalar
-
-### Aşama 1
-Temel kaynak dağıtımı.
-
-### Aşama 2
-Türkiye haritasının sisteme eklenmesi.
-
-### Aşama 3
-Afet bölgelerinin harita üzerinde gösterilmesi.
-
-### Aşama 4
-Yol kapalı/açık durumunun sisteme eklenmesi.
-
-### Aşama 5
-Su, gıda, ilaç ve çadır gibi kaynak türlerinin ayrılması.
-
-### Aşama 6
-Ambulans, ekip ve araç dağıtım modülü.
-
-### Aşama 7
-Geçmiş afet verilerinin analiz edilmesi.
-
-### Aşama 8
-Yapay zekâ destekli karar önerileri.
-
-### Aşama 9
-Gerçek zamanlı veri entegrasyonu.
-
-## 6. Hedef
-
-Afet-X'i basit bir hesaplama uygulamasından çıkararak afet yönetiminde kullanılabilecek kapsamlı bir karar destek sistemine dönüştürmek.
-
-## 7. Beklenen Sonuç
-
-Sistem, afet bölgelerini öncelik sırasına koyarak mevcut kaynakların daha hızlı, şeffaf ve veriye dayalı şekilde dağıtılmasına yardımcı olacaktır.
+├── data/
+│   └── regions.csv
+│
+├── templates/
+│   └── index.html
+│
+├── app.py
+├── render.yaml
+├── requirements.txt
+├── README.md
+└── PROJECT_PLAN.md
