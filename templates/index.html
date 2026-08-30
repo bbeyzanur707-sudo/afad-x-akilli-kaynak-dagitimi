@@ -1,794 +1,844 @@
-from flask import Flask, render_template, request, jsonify
-import math
-import requests
-
-app = Flask(__name__)
-
-
-# =========================================================
-# HASTANELER
-# =========================================================
-
-HOSPITALS = [
-    {
-        "id": 1,
-        "name": "Hatay Şehir Hastanesi",
-        "lat": 36.2023,
-        "lon": 36.1600,
-        "capacity": 78,
-        "staff_load": 72,
-        "beds_available": 110
-    },
-    {
-        "id": 2,
-        "name": "Hatay Eğitim ve Araştırma Hastanesi",
-        "lat": 36.1980,
-        "lon": 36.1500,
-        "capacity": 61,
-        "staff_load": 55,
-        "beds_available": 185
-    },
-    {
-        "id": 3,
-        "name": "Defne Devlet Hastanesi",
-        "lat": 36.2160,
-        "lon": 36.1400,
-        "capacity": 42,
-        "staff_load": 35,
-        "beds_available": 260
-    }
-]
-
-
-# =========================================================
-# AMBULANSLAR
-# =========================================================
-
-AMBULANCES = [
-    {
-        "id": "AMB-01",
-        "name": "Ambulans 01",
-        "lat": 36.2100,
-        "lon": 36.1450,
-        "status": "Müsait"
-    },
-    {
-        "id": "AMB-02",
-        "name": "Ambulans 02",
-        "lat": 36.1900,
-        "lon": 36.1700,
-        "status": "Müsait"
-    },
-    {
-        "id": "AMB-03",
-        "name": "Ambulans 03",
-        "lat": 36.2200,
-        "lon": 36.1250,
-        "status": "Görevde"
-    }
-]
-
-
-# =========================================================
-# YARDIM MALZEMELERİ
-# =========================================================
-
-RESOURCE_TYPES = [
-    "Su",
-    "Gıda",
-    "İlaç",
-    "Tıbbi Malzeme",
-    "Çadır",
-    "Jeneratör"
-]
-
-
-# =========================================================
-# NORMALİZASYON
-# =========================================================
-
-def normalize(values):
-
-    if not values:
-        return []
-
-    minimum = min(values)
-    maximum = max(values)
-
-    if maximum == minimum:
-        return [50 for _ in values]
-
-    return [
-        ((value - minimum) / (maximum - minimum)) * 100
-        for value in values
-    ]
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Afet-X | Akıllı Afet Yönetimi</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: linear-gradient(
+                135deg,
+                #1769aa,
+                #2196f3
+            );
+
+            color: white;
+            padding: 28px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            opacity: 0.9;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 1400px;
+            margin: 25px auto;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(200px, 1fr));
+
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1769aa;
+        }
+
+        .section {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            margin-bottom: 18px;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+
+            background: #1976d2;
+            color: white;
+
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 12px;
+        }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-# =========================================================
-# AFET ANALİZİ
-# =========================================================
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
 
-def analyze_regions(regions, total_resource):
+        th {
+            background: #f3f4f6;
+        }
 
-    populations = [
-        float(region.get("population", 0))
-        for region in regions
-    ]
+        .critical {
+            color: #dc2626;
+            font-weight: bold;
+        }
 
-    needs = [
-        float(region.get("need", 0))
-        for region in regions
-    ]
+        .urgent {
+            color: #ea580c;
+            font-weight: bold;
+        }
 
-    population_scores = normalize(populations)
-    need_scores = normalize(needs)
+        .medium {
+            color: #ca8a04;
+            font-weight: bold;
+        }
 
-    results = []
+        .low {
+            color: #16a34a;
+            font-weight: bold;
+        }
 
-    for index, region in enumerate(regions):
+        .hospital-grid {
+            display: grid;
 
-        severity = float(
-            region.get("severity", 0)
-        )
+            grid-template-columns:
+                repeat(auto-fit, minmax(260px, 1fr));
 
-        priority = (
-            severity * 0.50
-            + population_scores[index] * 0.20
-            + need_scores[index] * 0.30
-        )
+            gap: 15px;
+        }
 
-        results.append({
-            "name": region.get("name", "Bilinmeyen Bölge"),
-            "severity": round(severity, 2),
-            "population": populations[index],
-            "need": needs[index],
-            "priority": round(priority, 2),
-            "lat": region.get("lat"),
-            "lon": region.get("lon")
-        })
+        .hospital {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+        }
 
-    total_priority = sum(
-        item["priority"]
-        for item in results
-    )
+        .bar {
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
 
-    for item in results:
+        .bar-inner {
+            height: 100%;
+            background: #ef4444;
+        }
 
-        if total_priority > 0:
-            share = item["priority"] / total_priority
-        else:
-            share = 0
+        #routeResult {
+            margin-top: 15px;
+        }
 
-        item["percentage"] = round(
-            share * 100,
-            2
-        )
+        .route-box {
+            padding: 15px;
+            background: #f3f8ff;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
 
-        item["allocated_resource"] = round(
-            total_resource * share,
-            2
-        )
+    </style>
 
-        if item["priority"] >= 75:
-            item["status"] = "Kritik"
+</head>
 
-        elif item["priority"] >= 50:
-            item["status"] = "Acil"
+<body>
 
-        elif item["priority"] >= 25:
-            item["status"] = "Orta"
+<header>
 
-        else:
-            item["status"] = "Düşük"
+    <h1>🚨 Afet-X</h1>
 
-    results.sort(
-        key=lambda x: x["priority"],
-        reverse=True
-    )
+    <p>
+        Yapay zekâ destekli afet kaynak,
+        ambulans ve hastane karar destek sistemi
+    </p>
 
-    return results
+</header>
 
 
-# =========================================================
-# SİSTEM ÖNERİSİ
-# =========================================================
+<div class="container">
 
-def generate_recommendation(results):
 
-    if not results:
-        return "Analiz yapılacak bölge bulunamadı."
+    <!-- İSTATİSTİKLER -->
 
-    top = results[0]
+    <div class="cards">
 
-    return (
-        f"{top['name']} bölgesi en yüksek önceliğe sahip. "
-        f"Öncelik puanı {top['priority']}/100. "
-        f"Kaynakların %{top['percentage']} oranının "
-        f"bu bölgeye yönlendirilmesi öneriliyor."
-    )
+        <div class="card">
 
+            <h3>Afet Bölgeleri</h3>
 
-# =========================================================
-# MESAFE HESABI
-# =========================================================
-
-def haversine(lat1, lon1, lat2, lon2):
-
-    R = 6371
-
-    lat1 = math.radians(lat1)
-    lat2 = math.radians(lat2)
-
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
-
-    a = (
-        math.sin(dlat / 2) ** 2
-        +
-        math.cos(lat1)
-        * math.cos(lat2)
-        * math.sin(dlon / 2) ** 2
-    )
-
-    c = 2 * math.atan2(
-        math.sqrt(a),
-        math.sqrt(1 - a)
-    )
-
-    return R * c
-
-
-# =========================================================
-# OSRM ROTA
-# =========================================================
-
-def get_route(
-    start_lat,
-    start_lon,
-    end_lat,
-    end_lon
-):
-
-    url = (
-        "https://router.project-osrm.org/"
-        "route/v1/driving/"
-        f"{start_lon},{start_lat};"
-        f"{end_lon},{end_lat}"
-    )
-
-    params = {
-        "alternatives": "true",
-        "overview": "full",
-        "geometries": "geojson",
-        "steps": "false"
-    }
-
-    try:
-
-        response = requests.get(
-            url,
-            params=params,
-            timeout=12
-        )
-
-        response.raise_for_status()
-
-        data = response.json()
-
-        if data.get("code") != "Ok":
-            return None
-
-        routes = []
-
-        for route in data.get("routes", []):
-
-            routes.append({
-                "distance_km":
-                    round(
-                        route["distance"] / 1000,
-                        2
-                    ),
-
-                "duration_min":
-                    round(
-                        route["duration"] / 60,
-                        1
-                    ),
-
-                "geometry":
-                    route.get("geometry")
-            })
-
-        return routes
-
-    except Exception:
-        return None
-
-
-# =========================================================
-# HASTANE UYGUNLUK PUANI
-# =========================================================
-
-def hospital_score(
-    hospital,
-    duration_min,
-    distance_km
-):
-
-    # Daha düşük olması iyi olan değerler
-    time_score = max(
-        0,
-        100 - duration_min * 4
-    )
-
-    distance_score = max(
-        0,
-        100 - distance_km * 8
-    )
-
-    capacity_score = 100 - hospital["capacity"]
-
-    staff_score = 100 - hospital["staff_load"]
-
-    beds_score = min(
-        100,
-        hospital["beds_available"] / 2
-    )
-
-    score = (
-        time_score * 0.35
-        + distance_score * 0.15
-        + capacity_score * 0.20
-        + staff_score * 0.15
-        + beds_score * 0.15
-    )
-
-    return round(
-        max(0, min(100, score)),
-        2
-    )
-
-
-# =========================================================
-# ANA SAYFA
-# =========================================================
-
-@app.route("/")
-def index():
-
-    return render_template(
-        "index.html",
-        hospitals=HOSPITALS,
-        ambulances=AMBULANCES,
-        resource_types=RESOURCE_TYPES
-    )
-
-
-# =========================================================
-# AFET ANALİZİ
-# =========================================================
-
-@app.route(
-    "/analyze",
-    methods=["POST"]
-)
-def analyze():
-
-    data = request.get_json()
-
-    if not data:
-        return jsonify({
-            "error": "Veri alınamadı."
-        }), 400
-
-    regions = data.get(
-        "regions",
-        []
-    )
-
-    try:
-
-        total_resource = float(
-            data.get(
-                "total_resource",
+            <div
+                class="number"
+                id="regionCount">
                 0
-            )
-        )
+            </div>
 
-    except (ValueError, TypeError):
+        </div>
 
-        return jsonify({
-            "error": "Kaynak miktarı geçersiz."
-        }), 400
 
-    if total_resource <= 0:
+        <div class="card">
 
-        return jsonify({
-            "error":
-                "Toplam kaynak 0'dan büyük olmalıdır."
-        }), 400
+            <h3>Kritik Bölgeler</h3>
 
-    if not regions:
+            <div
+                class="number"
+                id="criticalCount">
+                0
+            </div>
 
-        return jsonify({
-            "error":
-                "En az bir afet bölgesi ekleyin."
-        }), 400
+        </div>
 
-    results = analyze_regions(
-        regions,
-        total_resource
-    )
 
-    critical_count = sum(
-        1
-        for item in results
-        if item["status"] == "Kritik"
-    )
+        <div class="card">
 
-    average_priority = (
-        sum(
-            item["priority"]
-            for item in results
-        )
-        / len(results)
-    )
+            <h3>Hastaneler</h3>
 
-    return jsonify({
+            <div
+                class="number"
+                id="hospitalCount">
+                0
+            </div>
 
-        "results": results,
+        </div>
 
-        "critical_count":
-            critical_count,
 
-        "average_priority":
-            round(
-                average_priority,
-                2
-            ),
+        <div class="card">
 
-        "ai_recommendation":
-            generate_recommendation(
-                results
-            )
-    })
-
-
-# =========================================================
-# HASTANELER
-# =========================================================
-
-@app.route("/hospitals")
-def hospitals():
+            <h3>Ambulanslar</h3>
 
-    return jsonify(HOSPITALS)
-
-
-# =========================================================
-# AMBULANSLAR
-# =========================================================
-
-@app.route("/ambulances")
-def ambulances():
-
-    return jsonify(AMBULANCES)
+            <div
+                class="number"
+                id="ambulanceCount">
+                0
+            </div>
 
-
-# =========================================================
-# TEK ROTA
-# =========================================================
-
-@app.route(
-    "/route",
-    methods=["POST"]
-)
-def route():
+        </div>
 
-    data = request.get_json()
-
-    if not data:
-        return jsonify({
-            "error": "Rota bilgisi bulunamadı."
-        }), 400
-
-    try:
-
-        start_lat = float(
-            data["start_lat"]
-        )
-
-        start_lon = float(
-            data["start_lon"]
-        )
-
-        end_lat = float(
-            data["end_lat"]
-        )
-
-        end_lon = float(
-            data["end_lon"]
-        )
-
-    except (
-        KeyError,
-        ValueError,
-        TypeError
-    ):
-
-        return jsonify({
-            "error":
-                "Konum bilgileri geçersiz."
-        }), 400
-
-    routes = get_route(
-        start_lat,
-        start_lon,
-        end_lat,
-        end_lon
-    )
-
-    if not routes:
-
-        distance = haversine(
-            start_lat,
-            start_lon,
-            end_lat,
-            end_lon
-        )
-
-        estimated_time = (
-            distance / 45
-        ) * 60
-
-        return jsonify({
-            "source": "Tahmini",
-            "routes": [{
-                "distance_km":
-                    round(distance, 2),
-                "duration_min":
-                    round(
-                        estimated_time,
-                        1
-                    ),
-                "geometry": None
-            }]
-        })
-
-    return jsonify({
-        "source": "OSRM",
-        "routes": routes
-    })
-
-
-# =========================================================
-# EN UYGUN HASTANE
-# =========================================================
-
-@app.route(
-    "/recommend-hospital",
-    methods=["POST"]
-)
-def recommend_hospital():
-
-    data = request.get_json()
-
-    if not data:
-
-        return jsonify({
-            "error":
-                "Ambulans bilgisi bulunamadı."
-        }), 400
-
-    ambulance_id = data.get(
-        "ambulance_id"
-    )
-
-    ambulance = next(
-        (
-            a for a in AMBULANCES
-            if str(a["id"]) ==
-            str(ambulance_id)
-        ),
-        None
-    )
-
-    if not ambulance:
-
-        return jsonify({
-            "error":
-                "Ambulans bulunamadı."
-        }), 404
-
-    hospital_results = []
-
-    for hospital in HOSPITALS:
-
-        routes = get_route(
-            ambulance["lat"],
-            ambulance["lon"],
-            hospital["lat"],
-            hospital["lon"]
-        )
-
-        if routes:
-
-            best_route = min(
-                routes,
-                key=lambda r:
-                r["duration_min"]
-            )
-
-            duration = best_route[
-                "duration_min"
-            ]
-
-            distance = best_route[
-                "distance_km"
-            ]
-
-            geometry = best_route[
-                "geometry"
-            ]
-
-            route_source = "OSRM"
-
-        else:
-
-            distance = haversine(
-                ambulance["lat"],
-                ambulance["lon"],
-                hospital["lat"],
-                hospital["lon"]
-            )
-
-            duration = (
-                distance / 45
-            ) * 60
-
-            geometry = None
-            route_source = "Tahmini"
-
-        score = hospital_score(
-            hospital,
-            duration,
-            distance
-        )
-
-        hospital_results.append({
-
-            "id":
-                hospital["id"],
-
-            "name":
-                hospital["name"],
-
-            "distance_km":
-                round(distance, 2),
-
-            "duration_min":
-                round(duration, 1),
-
-            "capacity":
-                hospital["capacity"],
-
-            "staff_load":
-                hospital["staff_load"],
-
-            "beds_available":
-                hospital["beds_available"],
-
-            "score":
-                score,
-
-            "route_source":
-                route_source,
-
-            "geometry":
-                geometry,
-
-            "reason": [
-                f"Ulaşım süresi: {round(duration, 1)} dakika",
-                f"Mesafe: {round(distance, 2)} km",
-                f"Hastane doluluğu: %{hospital['capacity']}",
-                f"Personel yükü: %{hospital['staff_load']}",
-                f"Boş yatak: {hospital['beds_available']}"
-            ]
-        })
-
-    hospital_results.sort(
-        key=lambda x: x["score"],
-        reverse=True
-    )
-
-    best = hospital_results[0]
-
-    return jsonify({
-
-        "ambulance":
-            ambulance,
-
-        "recommended":
-            best,
-
-        "hospitals":
-            hospital_results,
-
-        "message":
-            (
-                f"{best['name']} öneriliyor. "
-                f"Uygunluk puanı "
-                f"{best['score']}/100."
-            )
-    })
-
-
-# =========================================================
-# SAĞLIK DURUM ÖZETİ
-# =========================================================
-
-@app.route("/health-summary")
-def health_summary():
-
-    average_capacity = (
-        sum(
-            h["capacity"]
-            for h in HOSPITALS
-        )
-        / len(HOSPITALS)
-    )
-
-    average_staff = (
-        sum(
-            h["staff_load"]
-            for h in HOSPITALS
-        )
-        / len(HOSPITALS)
-    )
-
-    total_beds = sum(
-        h["beds_available"]
-        for h in HOSPITALS
-    )
-
-    critical_hospitals = [
-        h["name"]
-        for h in HOSPITALS
-        if (
-            h["capacity"] >= 85
-            or h["staff_load"] >= 85
-        )
-    ]
-
-    return jsonify({
-
-        "average_capacity":
-            round(
-                average_capacity,
-                1
-            ),
-
-        "average_staff_load":
-            round(
-                average_staff,
-                1
-            ),
-
-        "total_available_beds":
-            total_beds,
-
-        "critical_hospitals":
-            critical_hospitals
-    })
-
-
-# =========================================================
-# ÇALIŞTIR
-# =========================================================
-
-if __name__ == "__main__":
-
-    app.run(
-        host="0.0.0.0",
-        port=5000,
-        debug=True
-    )
+    </div>
+
+
+    <!-- AFET ANALİZİ -->
+
+    <div class="section">
+
+        <h2>📊 Afet Öncelik Analizi</h2>
+
+        <button onclick="analyzeRegions()">
+            Tüm Bölgeleri Analiz Et
+        </button>
+
+        <div id="analysisResult"></div>
+
+    </div>
+
+
+    <!-- HARİTA -->
+
+    <div class="section">
+
+        <h2>🗺️ Afet ve Ambulans Haritası</h2>
+
+        <div id="map"></div>
+
+    </div>
+
+
+    <!-- HASTANELER -->
+
+    <div class="section">
+
+        <h2>🏥 Hastane Durumu</h2>
+
+        <div
+            class="hospital-grid"
+            id="hospitalList">
+        </div>
+
+    </div>
+
+
+    <!-- AMBULANS -->
+
+    <div class="section">
+
+        <h2>🚑 Ambulans Hastane Önerisi</h2>
+
+        <p style="margin-bottom:15px;">
+            Haritadaki veya aşağıdaki ambulanslardan
+            birini seçerek en uygun hastaneyi hesaplayabilirsiniz.
+        </p>
+
+        <select
+            id="ambulanceSelect"
+            style="
+                padding:12px;
+                width:100%;
+                max-width:400px;
+                margin-bottom:10px;
+            ">
+        </select>
+
+        <br>
+
+        <button onclick="recommendHospital()">
+            🚑 En Uygun Hastaneyi Bul
+        </button>
+
+        <div id="hospitalRecommendation"></div>
+
+    </div>
+
+
+</div>
+
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+const regions =
+    {{ regions | tojson }};
+
+const hospitals =
+    {{ hospitals | tojson }};
+
+const ambulances =
+    {{ ambulances | tojson }};
+
+
+// =====================================================
+// SAYILAR
+// =====================================================
+
+document.getElementById(
+    "regionCount"
+).textContent = regions.length;
+
+document.getElementById(
+    "hospitalCount"
+).textContent = hospitals.length;
+
+document.getElementById(
+    "ambulanceCount"
+).textContent = ambulances.length;
+
+
+// =====================================================
+// HARİTA
+// =====================================================
+
+const map = L.map("map").setView(
+    [37.2, 36.8],
+    7
+);
+
+
+L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        attribution:
+            "&copy; OpenStreetMap katkıcıları"
+    }
+).addTo(map);
+
+
+// =====================================================
+// AFET BÖLGELERİ
+// =====================================================
+
+regions.forEach(region => {
+
+    const marker = L.circleMarker(
+        [region.lat, region.lon],
+        {
+            radius: 10,
+            color: "red",
+            fillColor: "red",
+            fillOpacity: 0.6
+        }
+    ).addTo(map);
+
+    marker.bindPopup(`
+        <b>🔴 ${region.name}</b><br>
+        Afet şiddeti: ${region.severity}<br>
+        Nüfus: ${region.population.toLocaleString()}<br>
+        İhtiyaç: ${region.need}
+    `);
+
+});
+
+
+// =====================================================
+// HASTANELER
+// =====================================================
+
+hospitals.forEach(hospital => {
+
+    const marker = L.marker([
+        hospital.lat,
+        hospital.lon
+    ]).addTo(map);
+
+    marker.bindPopup(`
+        <b>🏥 ${hospital.name}</b><br>
+        Kapasite: ${hospital.capacity}<br>
+        Kullanılabilir yatak:
+        ${hospital.beds_available}<br>
+        Personel yükü:
+        %${hospital.staff_load}
+    `);
+
+});
+
+
+// =====================================================
+// AMBULANSLAR
+// =====================================================
+
+ambulances.forEach(ambulance => {
+
+    const marker = L.marker([
+        ambulance.lat,
+        ambulance.lon
+    ]).addTo(map);
+
+    marker.bindPopup(`
+        <b>🚑 ${ambulance.name}</b><br>
+        Durum: ${ambulance.status}
+    `);
+
+});
+
+
+// =====================================================
+// HASTANE KARTLARI
+// =====================================================
+
+const hospitalList =
+    document.getElementById(
+        "hospitalList"
+    );
+
+hospitals.forEach(hospital => {
+
+    hospitalList.innerHTML += `
+
+        <div class="hospital">
+
+            <h3>
+                🏥 ${hospital.name}
+            </h3>
+
+            <p>
+                ${hospital.city}
+            </p>
+
+            <br>
+
+            <p>
+                🛏️ Kullanılabilir yatak:
+                <b>
+                    ${hospital.beds_available}
+                </b>
+                /
+                ${hospital.capacity}
+            </p>
+
+            <p>
+                😓 Personel yükü:
+                <b>
+                    %${hospital.staff_load}
+                </b>
+            </p>
+
+            <div class="bar">
+
+                <div
+                    class="bar-inner"
+                    style="
+                        width:${hospital.staff_load}%;
+                    ">
+                </div>
+
+            </div>
+
+        </div>
+    `;
+});
+
+
+// =====================================================
+// AMBULANS SEÇİMİ
+// =====================================================
+
+const ambulanceSelect =
+    document.getElementById(
+        "ambulanceSelect"
+    );
+
+ambulances.forEach(ambulance => {
+
+    ambulanceSelect.innerHTML += `
+
+        <option value="${ambulance.id}">
+            ${ambulance.name}
+        </option>
+
+    `;
+
+});
+
+
+// =====================================================
+// AFET ANALİZİ
+// =====================================================
+
+async function analyzeRegions() {
+
+    const response =
+        await fetch(
+            "/analyze",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    regions: regions
+                })
+            }
+        );
+
+    const data =
+        await response.json();
+
+    document.getElementById(
+        "criticalCount"
+    ).textContent =
+        data.critical_count;
+
+
+    let html = `
+
+        <table>
+
+            <tr>
+                <th>Bölge</th>
+                <th>Şiddet</th>
+                <th>İhtiyaç</th>
+                <th>Öncelik</th>
+                <th>Durum</th>
+            </tr>
+
+    `;
+
+
+    data.results.forEach(region => {
+
+        let className = "low";
+
+        if (region.priority >= 75) {
+            className = "critical";
+        }
+        else if (region.priority >= 50) {
+            className = "urgent";
+        }
+        else if (region.priority >= 25) {
+            className = "medium";
+        }
+
+
+        html += `
+
+            <tr>
+
+                <td>
+                    ${region.name}
+                </td>
+
+                <td>
+                    ${region.severity}
+                </td>
+
+                <td>
+                    ${region.need}
+                </td>
+
+                <td>
+                    <b>
+                        ${region.priority}
+                    </b>
+                </td>
+
+                <td class="${className}">
+                    ${region.status}
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    html += "</table>";
+
+    document.getElementById(
+        "analysisResult"
+    ).innerHTML = html;
+
+}
+
+
+// =====================================================
+// HASTANE ÖNERİSİ
+// =====================================================
+
+async function recommendHospital() {
+
+    const selectedId =
+        ambulanceSelect.value;
+
+
+    const ambulance =
+        ambulances.find(
+            a => a.id === selectedId
+        );
+
+
+    const response =
+        await fetch(
+            "/recommend-hospital",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    lat: ambulance.lat,
+                    lon: ambulance.lon
+                })
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (data.error) {
+
+        document.getElementById(
+            "hospitalRecommendation"
+        ).innerHTML = `
+            <div class="route-box">
+                ❌ ${data.error}
+            </div>
+        `;
+
+        return;
+    }
+
+
+    const hospital =
+        data.recommended;
+
+
+    let html = `
+
+        <div class="route-box">
+
+            <h3>
+                🏥 Önerilen Hastane
+            </h3>
+
+            <br>
+
+            <b>
+                ${hospital.name}
+            </b>
+
+            <p>
+                📍 Mesafe:
+                ${hospital.distance_km} km
+            </p>
+
+            <p>
+                🛏️ Kullanılabilir yatak:
+                ${hospital.beds_available}
+            </p>
+
+            <p>
+                😓 Personel yükü:
+                %${hospital.staff_load}
+            </p>
+
+            <p>
+                ⭐ Uygunluk puanı:
+                ${hospital.score}
+            </p>
+
+        </div>
+
+    `;
+
+
+    if (
+        data.routes &&
+        data.routes.length > 0
+    ) {
+
+        const route =
+            data.routes[0];
+
+
+        html += `
+
+            <div class="route-box">
+
+                <h3>
+                    🛣️ En Hızlı Rota
+                </h3>
+
+                <p>
+                    📏 Mesafe:
+                    ${route.distance_km} km
+                </p>
+
+                <p>
+                    ⏱️ Tahmini süre:
+                    ${route.duration_min} dakika
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    if (
+        data.alternatives &&
+        data.alternatives.length > 0
+    ) {
+
+        html += `
+
+            <div class="route-box">
+
+                <h3>
+                    🔄 Alternatif Hastaneler
+                </h3>
+
+        `;
+
+
+        data.alternatives
+            .slice(0, 3)
+            .forEach(item => {
+
+                html += `
+
+                    <p>
+                        🏥 ${item.name}
+                        —
+                        ${item.distance_km} km
+                        —
+                        puan: ${item.score}
+                    </p>
+
+                `;
+
+            });
+
+
+        html += "</div>";
+
+    }
+
+
+    document.getElementById(
+        "hospitalRecommendation"
+    ).innerHTML = html;
+
+}
+
+
+// =====================================================
+// SAYFA AÇILINCA ANALİZ
+// =====================================================
+
+analyzeRegions();
+
+</script>
+
+</body>
+
+</html>
