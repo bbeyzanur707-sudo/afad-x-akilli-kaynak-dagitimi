@@ -1,70 +1,51 @@
-# 🚨 AFAD-X
+# 🌿 Görüntü Hastalık Analiz Sistemi
 
-## Afet Sonrası Akıllı Kaynak Dağıtım Sistemi
+Bu proje, yüklenen görüntüleri basit bir RGB renk analizi yöntemiyle inceleyen Flask tabanlı bir web uygulamasıdır.
 
-AFAD-X, afet sonrasında bölgelerin ihtiyaçlarını analiz ederek
-yardım kaynaklarının önceliklendirilmesine yardımcı olan
-eğitim/prototip amaçlı bir karar destek sistemi projesidir.
+> **Not:** Bu proje eğitim ve demo amaçlıdır. Gerçek bir yapay zeka veya tıbbi teşhis sistemi değildir.
 
 ---
 
-## 🎯 Projenin Amacı
+## 📌 Projenin Amacı
 
-Afet sonrasında;
+Kullanıcının bir görüntü yüklemesini ve görüntünün temel renk özelliklerine göre basit bir analiz sonucu almasını sağlar.
 
-- Hangi bölgenin daha acil olduğu?
-- Hangi bölgede daha fazla insan bulunduğu?
-- Hangi bölgede ne kadar su gerektiği?
-- Ne kadar gıda gerektiği?
-- Ne kadar ilaç gerektiği?
-- Ne kadar battaniye gerektiği?
+Sistem:
 
-gibi bilgileri tek bir panel üzerinden analiz etmeyi amaçlar.
-
----
-
-## 🚀 Özellikler
-
-- 📍 Bölgesel analiz
-- 👥 Nüfus analizi
-- 🚨 Afet şiddeti analizi
-- 💧 Su ihtiyacı
-- 🍱 Gıda ihtiyacı
-- 💊 İlaç ihtiyacı
-- 🛏️ Battaniye ihtiyacı
-- ⭐ Öncelik skoru
-- 🔴 Kritik bölge tespiti
-- 📦 Akıllı kaynak dağıtımı
-- 📊 Grafikler
-- 📥 CSV raporu
-- ⚙️ Dinamik kaynak simülasyonu
+1. Görüntü dosyasını kabul eder.
+2. Dosya formatını kontrol eder.
+3. Görüntüyü PIL ile açar.
+4. Görüntüyü standart boyuta getirir.
+5. Ortalama RGB değerlerini hesaplar.
+6. Basit kurallara göre analiz sonucu üretir.
+7. Sonucu web sayfasında gösterir.
+8. Yüklenen görüntüyü `static/uploads` klasörüne kaydeder.
 
 ---
 
-## 🧮 Öncelik Skoru
+## 🛠️ Kullanılan Teknolojiler
 
-Sistem üç temel faktörü kullanmaktadır:
+- Python
+- Flask
+- Pillow
+- NumPy
+- HTML
+- CSS
+- Jinja2
 
-### Afet Şiddeti
+---
 
-**%50 ağırlık**
-
-### Nüfus
-
-**%20 ağırlık**
-
-### İhtiyaç Miktarı
-
-**%30 ağırlık**
-
-Toplam ağırlık **%100'dür.**
-
-Öncelik skoru aşağıdaki formül ile hesaplanmaktadır:
+## 📁 Proje Klasör Yapısı
 
 ```text
-Öncelik Skoru =
-(Afet Şiddeti × 0.50)
-+
-(Nüfus × 0.20)
-+
-(İhtiyaç Miktarı × 0.30)
+proje/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+│
+├── templates/
+│   └── index.html
+│
+└── static/
+    └── uploads/
