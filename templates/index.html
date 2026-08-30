@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+      content="width=device-width, initial-scale=1.0">
 
 <title>Afet-X | Akıllı Afet Yönetimi</title>
 
@@ -25,7 +25,7 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 }
 
 body {
-    background: #f1f5f9;
+    background: #eef4f8;
     color: #1e293b;
 }
 
@@ -38,19 +38,17 @@ header {
         );
 
     color: white;
-
-    padding: 32px 20px;
-
+    padding: 35px 20px;
     text-align: center;
 }
 
 header h1 {
-    font-size: 36px;
+    font-size: 38px;
     margin-bottom: 8px;
 }
 
 .container {
-    max-width: 1250px;
+    max-width: 1300px;
     margin: 30px auto;
     padding: 0 18px;
 }
@@ -62,13 +60,35 @@ header h1 {
     margin-bottom: 25px;
 
     box-shadow:
-        0 7px 25px
+        0 8px 25px
         rgba(0,0,0,.07);
 }
 
 .card h2 {
     color: #075985;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns:
+        repeat(4, 1fr);
+    gap: 14px;
+}
+
+input,
+select {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border:
+        1px solid #cbd5e1;
+
+    border-radius: 9px;
+
+    margin-bottom: 12px;
 }
 
 label {
@@ -77,48 +97,10 @@ label {
     margin-bottom: 6px;
 }
 
-input,
-select {
-    width: 100%;
-    padding: 12px;
-
-    border: 1px solid #cbd5e1;
-
-    border-radius: 9px;
-
-    margin-bottom: 14px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns:
-        repeat(4,1fr);
-
-    gap: 14px;
-}
-
-.region {
-    border: 1px solid #dbe4ee;
-    border-radius: 14px;
-
-    padding: 18px;
-
-    margin: 15px 0;
-
-    background: #f8fafc;
-}
-
-.region-title {
-    display: flex;
-
-    justify-content:
-        space-between;
-
-    margin-bottom: 15px;
-}
-
 button {
+
     border: none;
+
     border-radius: 9px;
 
     padding: 13px 18px;
@@ -129,41 +111,70 @@ button {
 }
 
 .add-btn {
+
     width: 100%;
 
     background: #e0f2fe;
 
     color: #075985;
+
+    margin-bottom: 10px;
 }
 
 .analyze-btn {
+
     width: 100%;
 
     background: #075985;
 
     color: white;
-
-    margin-top: 10px;
 }
 
 .delete-btn {
+
     background: #fee2e2;
 
     color: #b91c1c;
+}
 
-    padding: 8px 12px;
+.region {
+
+    background: #f8fafc;
+
+    border:
+        1px solid #dbe4ee;
+
+    border-radius: 14px;
+
+    padding: 18px;
+
+    margin: 15px 0;
+}
+
+.region-title {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom: 15px;
 }
 
 .dashboard {
+
     display: grid;
 
     grid-template-columns:
-        repeat(4,1fr);
+        repeat(4, 1fr);
 
     gap: 15px;
+
+    margin-bottom: 25px;
 }
 
 .stat {
+
     background: white;
 
     border-radius: 15px;
@@ -176,6 +187,7 @@ button {
 }
 
 .stat span {
+
     display: block;
 
     color: #64748b;
@@ -184,35 +196,37 @@ button {
 }
 
 .stat strong {
-    font-size: 27px;
+
+    font-size: 28px;
 
     color: #075985;
 }
 
-#resultsSection {
-    display: none;
+#map {
+
+    height: 550px;
+
+    width: 100%;
+
+    border-radius: 15px;
 }
 
 .result {
-    border: 1px solid #e2e8f0;
+
+    border:
+        1px solid #e2e8f0;
 
     border-radius: 14px;
 
     padding: 18px;
 
-    margin-bottom: 14px;
-}
-
-.result-header {
-    display: flex;
-
-    justify-content:
-        space-between;
-
-    align-items: center;
+    margin-bottom: 15px;
 }
 
 .status {
+
+    display: inline-block;
+
     padding: 7px 12px;
 
     border-radius: 20px;
@@ -242,29 +256,12 @@ button {
     color: #15803d;
 }
 
-.progress {
-    height: 11px;
-
-    background: #e2e8f0;
-
-    border-radius: 20px;
-
-    overflow: hidden;
-
-    margin-top: 10px;
-}
-
-.progress-bar {
-    height: 100%;
-
-    background: #0284c7;
-}
-
 .info-grid {
+
     display: grid;
 
     grid-template-columns:
-        repeat(4,1fr);
+        repeat(4, 1fr);
 
     gap: 10px;
 
@@ -272,14 +269,16 @@ button {
 }
 
 .info {
+
     background: #f8fafc;
 
-    padding: 12px;
+    padding: 13px;
 
     border-radius: 9px;
 }
 
 .info small {
+
     display: block;
 
     color: #64748b;
@@ -288,6 +287,7 @@ button {
 }
 
 .recommendation {
+
     background: #eff6ff;
 
     border-left:
@@ -300,18 +300,12 @@ button {
     line-height: 1.6;
 }
 
-#map {
-    height: 500px;
-
-    width: 100%;
-
-    border-radius: 15px;
-}
-
 .hospital-card {
-    border: 1px solid #e2e8f0;
 
-    border-radius: 12px;
+    border:
+        1px solid #e2e8f0;
+
+    border-radius: 13px;
 
     padding: 17px;
 
@@ -319,70 +313,67 @@ button {
 }
 
 .hospital-card h3 {
+
     color: #075985;
 
     margin-bottom: 10px;
 }
 
 .bar {
-    height: 9px;
+
+    height: 10px;
 
     background: #e2e8f0;
 
     border-radius: 20px;
 
-    margin: 6px 0 12px;
-
     overflow: hidden;
+
+    margin: 6px 0 12px;
 }
 
 .bar-inner {
+
     height: 100%;
 
     background: #0284c7;
 }
 
 .route-card {
+
     background: #f8fafc;
 
-    border-radius: 12px;
+    border-radius: 13px;
 
-    padding: 16px;
+    padding: 18px;
 
     margin-top: 12px;
 }
 
 .route-best {
+
     border:
         2px solid #0284c7;
 
     background: #eff6ff;
 }
 
-.error {
-    display: none;
+.alert {
 
-    background: #fee2e2;
+    background: #fff7ed;
 
-    color: #991b1b;
+    border-left:
+        5px solid #f97316;
 
-    padding: 13px;
+    padding: 15px;
 
     border-radius: 9px;
 
-    margin: 12px 0;
+    margin-bottom: 15px;
 }
 
-.success {
-    background: #dcfce7;
-
-    color: #166534;
-
-    padding: 14px;
-
-    border-radius: 10px;
-
-    margin-top: 15px;
+.hidden {
+    display: none;
 }
 
 @media(max-width:800px) {
@@ -402,15 +393,16 @@ button {
     .dashboard,
     .info-grid {
 
-        grid-template-columns: 1fr;
+        grid-template-columns:
+            1fr;
     }
 
     header h1 {
-        font-size: 27px;
+        font-size: 28px;
     }
 
     #map {
-        height: 400px;
+        height: 420px;
     }
 }
 
@@ -418,9 +410,7 @@ button {
 
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -437,7 +427,42 @@ Karar Destek Sistemi
 <div class="container">
 
 
-<!-- KAYNAK ANALİZİ -->
+<!-- =====================================================
+     PROJE TANITIMI
+===================================================== -->
+
+<div class="card">
+
+<h2>🧠 Afet-X Nasıl Çalışıyor?</h2>
+
+<p>
+
+Afet-X; afet bölgelerinin önceliğini,
+kullanılabilir kaynakları, ambulans konumlarını
+ve hastane durumlarını birlikte değerlendirerek
+karar desteği sağlar.
+
+</p>
+
+<br>
+
+<div class="alert">
+
+<strong>⚠️ Prototip uyarısı:</strong>
+
+Hastane doluluk, personel yorgunluğu,
+ambulans ve rota verileri demonstrasyon amaçlıdır.
+Gerçek kullanımda resmi ve gerçek zamanlı verilerle
+güncellenmelidir.
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     KAYNAK ANALİZİ
+===================================================== -->
 
 <div class="card">
 
@@ -451,7 +476,8 @@ Toplam Kullanılabilir Kaynak
 id="totalResource"
 type="number"
 placeholder="Örn. 100000"
-min="1">
+min="1"
+>
 
 
 <div id="regions"></div>
@@ -466,12 +492,6 @@ onclick="addRegion()">
 </button>
 
 
-<div
-id="error"
-class="error">
-</div>
-
-
 <button
 class="analyze-btn"
 onclick="analyze()">
@@ -483,9 +503,12 @@ onclick="analyze()">
 </div>
 
 
-<!-- SONUÇLAR -->
+<!-- =====================================================
+     SONUÇ DASHBOARD
+===================================================== -->
 
-<section id="resultsSection">
+<div id="resultsSection"
+     class="hidden">
 
 
 <div class="dashboard">
@@ -568,11 +591,12 @@ class="recommendation">
 
 </div>
 
+</div>
 
-</section>
 
-
-<!-- HARİTA -->
+<!-- =====================================================
+     HARİTA
+===================================================== -->
 
 <div class="card">
 
@@ -583,8 +607,12 @@ class="recommendation">
 <p style="margin-bottom:15px;color:#64748b">
 
 🔵 Ambulans &nbsp;&nbsp;
+
 🏥 Hastane &nbsp;&nbsp;
-🔴 Afet bölgesi
+
+🔴 Afet bölgesi &nbsp;&nbsp;
+
+🛣️ Ambulans rotası
 
 </p>
 
@@ -593,14 +621,15 @@ class="recommendation">
 </div>
 
 
-<!-- AMBULANS -->
+<!-- =====================================================
+     AMBULANS
+===================================================== -->
 
 <div class="card">
 
 <h2>
-🚑 Ambulans Rota ve Hastane Önerisi
+🚑 Ambulans Karar Destek Sistemi
 </h2>
-
 
 <label>
 Ambulans Seç
@@ -632,12 +661,17 @@ onclick="findBestHospital()">
 </button>
 
 
-<div id="hospitalRecommendation"></div>
+<div
+id="hospitalRecommendation"
+style="margin-top:20px">
+</div>
 
 </div>
 
 
-<!-- HASTANELER -->
+<!-- =====================================================
+     HASTANELER
+===================================================== -->
 
 <div class="card">
 
@@ -650,12 +684,14 @@ onclick="findBestHospital()">
 </div>
 
 
-<!-- ROTALAR -->
+<!-- =====================================================
+     ROTALAR
+===================================================== -->
 
 <div class="card">
 
 <h2>
-🛣️ Alternatif Rotalar
+🛣️ Alternatif Rota Karşılaştırması
 </h2>
 
 <div id="routes"></div>
@@ -679,47 +715,35 @@ let map;
 
 let routeLayers = [];
 
-
-/* --------------------------------
-   HASTANELER
--------------------------------- */
-
 const hospitals =
 {{ hospitals | tojson }};
-
-
-/* --------------------------------
-   AMBULANSLAR
--------------------------------- */
 
 const ambulances =
 {{ ambulances | tojson }};
 
 
-/* --------------------------------
-   HARİTA
--------------------------------- */
+///////////////////////////////////////////////////////////
+// HARİTA
+///////////////////////////////////////////////////////////
 
-function initializeMap() {
+function initMap() {
 
-    map = L.map("map")
-        .setView(
-            [36.20,36.15],
-            12
-        );
-
+    map = L.map("map").setView(
+        [36.20, 36.15],
+        12
+    );
 
     L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
             maxZoom: 19,
             attribution:
-                "&copy; OpenStreetMap"
+                "&copy; OpenStreetMap katkıcıları"
         }
     ).addTo(map);
 
 
-    /* Hastaneler */
+    // HASTANELER
 
     hospitals.forEach(
         hospital => {
@@ -730,180 +754,98 @@ function initializeMap() {
             ])
             .addTo(map)
             .bindPopup(`
-                <b>🏥
-                ${hospital.name}
-                </b>
+
+                <strong>
+                🏥 ${hospital.name}
+                </strong>
+
                 <br><br>
+
                 Doluluk:
                 %${hospital.capacity}
+
                 <br>
-                Personel yükü:
-                %${hospital.staff_load}
+
+                Personel yorgunluğu:
+                %${hospital.fatigue}
+
                 <br>
-                Kullanılabilir yatak:
+
+                Boş yatak:
                 ${hospital.beds_available}
+
             `);
 
         }
     );
 
 
-    /* Ambulanslar */
+    // AMBULANSLAR
 
     ambulances.forEach(
         ambulance => {
 
-            L.circleMarker([
-                ambulance.lat,
-                ambulance.lon
-            ], {
-                radius: 9
-            })
+            L.circleMarker(
+                [
+                    ambulance.lat,
+                    ambulance.lon
+                ],
+                {
+                    radius: 9
+                }
+            )
             .addTo(map)
             .bindPopup(`
-                <b>🚑
-                ${ambulance.name}
-                </b>
+
+                <strong>
+                🚑 ${ambulance.name}
+                </strong>
+
                 <br>
+
                 Durum:
                 ${ambulance.status}
+
             `);
 
         }
     );
-
 }
 
 
-/* --------------------------------
-   HASTANE KARTLARI
--------------------------------- */
-
-function displayHospitals() {
-
-    const container =
-        document.getElementById(
-            "hospitalList"
-        );
-
-    container.innerHTML = "";
-
-
-    hospitals.forEach(
-        hospital => {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-            card.className =
-                "hospital-card";
-
-
-            card.innerHTML = `
-
-                <h3>
-                    🏥
-                    ${hospital.name}
-                </h3>
-
-                <div>
-                    Doluluk:
-                    <b>
-                        %${hospital.capacity}
-                    </b>
-                </div>
-
-                <div class="bar">
-                    <div
-                        class="bar-inner"
-                        style="
-                        width:${hospital.capacity}%;
-                        ">
-                    </div>
-                </div>
-
-                <div>
-                    Personel yükü /
-                    yorgunluk skoru:
-                    <b>
-                        %${hospital.staff_load}
-                    </b>
-                </div>
-
-                <div class="bar">
-                    <div
-                        class="bar-inner"
-                        style="
-                        width:${hospital.staff_load}%;
-                        ">
-                    </div>
-                </div>
-
-                <div>
-                    Kullanılabilir yatak:
-                    <b>
-                        ${hospital.beds_available}
-                    </b>
-                </div>
-            `;
-
-
-            container.appendChild(card);
-
-        }
-    );
-
-}
-
-
-/* --------------------------------
-   BÖLGE EKLE
--------------------------------- */
+///////////////////////////////////////////////////////////
+// AFET BÖLGESİ EKLE
+///////////////////////////////////////////////////////////
 
 function addRegion() {
 
     regionNumber++;
-
 
     const container =
         document.getElementById(
             "regions"
         );
 
-
-    const region =
+    const div =
         document.createElement(
             "div"
         );
 
+    div.className = "region";
 
-    region.className =
-        "region";
-
-
-    region.id =
-        "region-" +
-        regionNumber;
-
-
-    region.innerHTML = `
+    div.innerHTML = `
 
         <div class="region-title">
 
-            <h3>
-                📍 Bölge #${regionNumber}
-            </h3>
+            <strong>
+            🔴 Afet Bölgesi #${regionNumber}
+            </strong>
 
             <button
-                class="delete-btn"
-                onclick="
-                removeRegion(
-                    ${regionNumber}
-                )">
+            class="delete-btn"
+            onclick="this.parentElement.parentElement.remove()">
 
-                Sil
+            Sil
 
             </button>
 
@@ -912,16 +854,16 @@ function addRegion() {
 
         <div class="grid">
 
-
             <div>
 
                 <label>
-                    Bölge Adı
+                Bölge Adı
                 </label>
 
                 <input
-                    class="region-name"
-                    placeholder="Örn. Hatay">
+                class="region-name"
+                placeholder="Örn. Hatay"
+                >
 
             </div>
 
@@ -929,15 +871,16 @@ function addRegion() {
             <div>
 
                 <label>
-                    Afet Şiddeti
+                Afet Şiddeti
                 </label>
 
                 <input
-                    class="severity"
-                    type="number"
-                    min="0"
-                    max="100"
-                    placeholder="0-100">
+                class="region-severity"
+                type="number"
+                min="0"
+                max="100"
+                placeholder="0-100"
+                >
 
             </div>
 
@@ -945,14 +888,14 @@ function addRegion() {
             <div>
 
                 <label>
-                    Nüfus
+                Nüfus
                 </label>
 
                 <input
-                    class="population"
-                    type="number"
-                    min="0"
-                    placeholder="Örn. 1700000">
+                class="region-population"
+                type="number"
+                placeholder="Örn. 1700000"
+                >
 
             </div>
 
@@ -960,92 +903,30 @@ function addRegion() {
             <div>
 
                 <label>
-                    İhtiyaç
+                İhtiyaç
                 </label>
 
                 <input
-                    class="need"
-                    type="number"
-                    min="0"
-                    placeholder="Örn. 8500">
-
-            </div>
-
-
-            <div>
-
-                <label>
-                    Enlem
-                </label>
-
-                <input
-                    class="lat"
-                    type="number"
-                    step="any"
-                    placeholder="Örn. 36.20">
-
-            </div>
-
-
-            <div>
-
-                <label>
-                    Boylam
-                </label>
-
-                <input
-                    class="lon"
-                    type="number"
-                    step="any"
-                    placeholder="Örn. 36.16">
+                class="region-need"
+                type="number"
+                placeholder="Örn. 8500"
+                >
 
             </div>
 
         </div>
+
     `;
 
-
-    container.appendChild(
-        region
-    );
-
+    container.appendChild(div);
 }
 
 
-/* --------------------------------
-   BÖLGE SİL
--------------------------------- */
-
-function removeRegion(id) {
-
-    const region =
-        document.getElementById(
-            "region-" + id
-        );
-
-
-    if (region) {
-        region.remove();
-    }
-
-}
-
-
-/* --------------------------------
-   AFET ANALİZİ
--------------------------------- */
+///////////////////////////////////////////////////////////
+// AFET ANALİZİ
+///////////////////////////////////////////////////////////
 
 async function analyze() {
-
-    const error =
-        document.getElementById(
-            "error"
-        );
-
-
-    error.style.display =
-        "none";
-
 
     const totalResource =
         Number(
@@ -1055,395 +936,267 @@ async function analyze() {
         );
 
 
+    const regions = [];
+
+
+    document
+        .querySelectorAll(".region")
+        .forEach(region => {
+
+            regions.push({
+
+                name:
+                    region.querySelector(
+                        ".region-name"
+                    ).value,
+
+                severity:
+                    Number(
+                        region.querySelector(
+                            ".region-severity"
+                        ).value
+                    ),
+
+                population:
+                    Number(
+                        region.querySelector(
+                            ".region-population"
+                        ).value
+                    ),
+
+                need:
+                    Number(
+                        region.querySelector(
+                            ".region-need"
+                        ).value
+                    )
+
+            });
+
+        });
+
+
     if (
         !totalResource ||
         totalResource <= 0
     ) {
 
-        showError(
-            "Toplam kaynak miktarını girin."
+        alert(
+            "Lütfen toplam kaynak miktarını girin."
         );
 
         return;
     }
 
 
-    const elements =
-        document.querySelectorAll(
-            ".region"
-        );
+    if (!regions.length) {
 
-
-    if (!elements.length) {
-
-        showError(
-            "En az bir bölge ekleyin."
+        alert(
+            "En az bir afet bölgesi ekleyin."
         );
 
         return;
     }
 
 
-    const regions = [];
+    const response =
+        await fetch(
+            "/analyze",
+            {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+
+                        total_resource:
+                            totalResource,
+
+                        regions:
+                            regions
+
+                    })
+            }
+        );
 
 
-    for (const element of elements) {
-
-        const name =
-            element.querySelector(
-                ".region-name"
-            ).value.trim();
+    const data =
+        await response.json();
 
 
-        const severity =
-            Number(
-                element.querySelector(
-                    ".severity"
-                ).value
-            );
+    if (data.error) {
 
+        alert(data.error);
 
-        const population =
-            Number(
-                element.querySelector(
-                    ".population"
-                ).value
-            );
-
-
-        const need =
-            Number(
-                element.querySelector(
-                    ".need"
-                ).value
-            );
-
-
-        const lat =
-            element.querySelector(
-                ".lat"
-            ).value;
-
-
-        const lon =
-            element.querySelector(
-                ".lon"
-            ).value;
-
-
-        if (
-            !name ||
-            Number.isNaN(severity) ||
-            Number.isNaN(population) ||
-            Number.isNaN(need)
-        ) {
-
-            showError(
-                "Bütün bölge bilgilerini doldurun."
-            );
-
-            return;
-        }
-
-
-        if (
-            severity < 0 ||
-            severity > 100
-        ) {
-
-            showError(
-                "Afet şiddeti 0-100 arasında olmalıdır."
-            );
-
-            return;
-        }
-
-
-        regions.push({
-
-            name,
-            severity,
-            population,
-            need,
-            lat:
-                lat === ""
-                ? null
-                : Number(lat),
-
-            lon:
-                lon === ""
-                ? null
-                : Number(lon)
-
-        });
-
+        return;
     }
 
 
-    try {
-
-        const response =
-            await fetch(
-                "/analyze",
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            total_resource:
-                                totalResource,
-
-                            regions:
-                                regions
-                        })
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            showError(
-                data.error
-            );
-
-            return;
-        }
-
-
-        displayResults(
-            data,
-            totalResource
+    document
+        .getElementById(
+            "resultsSection"
+        )
+        .classList.remove(
+            "hidden"
         );
 
 
-        addRegionMarkers(
-            data.results
-        );
-
-    }
-
-    catch (error) {
-
-        showError(
-            "Sunucuya bağlanılamadı."
-        );
-
-    }
-
-}
+    document
+        .getElementById(
+            "totalDisplay"
+        )
+        .innerText =
+            totalResource.toLocaleString();
 
 
-/* --------------------------------
-   SONUÇLAR
--------------------------------- */
-
-function displayResults(
-    data,
-    totalResource
-) {
-
-    document.getElementById(
-        "resultsSection"
-    ).style.display =
-        "block";
+    document
+        .getElementById(
+            "regionCount"
+        )
+        .innerText =
+            results.length;
 
 
-    document.getElementById(
-        "totalDisplay"
-    ).textContent =
-        formatNumber(
-            totalResource
-        );
+    document
+        .getElementById(
+            "criticalCount"
+        )
+        .innerText =
+            data.critical_count;
 
 
-    document.getElementById(
-        "regionCount"
-    ).textContent =
-        data.results.length;
+    document
+        .getElementById(
+            "averagePriority"
+        )
+        .innerText =
+            data.average_priority;
 
 
-    document.getElementById(
-        "criticalCount"
-    ).textContent =
-        data.critical_count;
+    document
+        .getElementById(
+            "recommendation"
+        )
+        .innerText =
+            data.ai_recommendation;
 
 
-    document.getElementById(
-        "averagePriority"
-    ).textContent =
-        data.average_priority;
-
-
-    document.getElementById(
-        "recommendation"
-    ).textContent =
-        data.ai_recommendation;
-
-
-    const container =
+    const resultContainer =
         document.getElementById(
             "results"
         );
 
-
-    container.innerHTML = "";
+    resultContainer.innerHTML = "";
 
 
     data.results.forEach(
-        (item,index) => {
+        item => {
 
-            let statusClass =
-                "dusuk";
-
-
-            if (
-                item.status ===
-                "Kritik"
-            ) {
-                statusClass =
-                    "kritik";
-            }
-
-            else if (
-                item.status ===
-                "Acil"
-            ) {
-                statusClass =
-                    "acil";
-            }
-
-            else if (
-                item.status ===
-                "Orta"
-            ) {
-                statusClass =
-                    "orta";
-            }
+            const statusClass =
+                item.status
+                    .toLowerCase()
+                    .replace(
+                        "ü",
+                        "u"
+                    );
 
 
-            const result =
+            const div =
                 document.createElement(
                     "div"
                 );
 
-
-            result.className =
+            div.className =
                 "result";
 
 
-            result.innerHTML = `
+            div.innerHTML = `
 
-                <div
-                class="result-header">
+                <div>
 
-                    <h3>
-                        ${index + 1}.
-                        ${escapeHtml(
-                            item.name
-                        )}
-                    </h3>
+                    <strong>
+                    ${item.name}
+                    </strong>
 
                     <span
-                    class="
-                    status
-                    ${statusClass}
-                    ">
+                    class="status ${statusClass}"
+                    style="float:right">
 
-                        ${item.status}
+                    ${item.status}
 
                     </span>
 
                 </div>
 
 
-                <br>
+                <div class="info-grid">
 
-                <strong>
-                    Öncelik:
-                    ${item.priority}/100
-                </strong>
+                    <div class="info">
+
+                        <small>
+                        Afet şiddeti
+                        </small>
+
+                        <strong>
+                        ${item.severity}
+                        </strong>
+
+                    </div>
 
 
-                <div
-                class="progress">
+                    <div class="info">
 
-                    <div
-                    class="progress-bar"
-                    style="
-                    width:${Math.min(
-                        item.priority,
-                        100
-                    )}%;
-                    ">
+                        <small>
+                        Nüfus
+                        </small>
+
+                        <strong>
+                        ${Number(
+                            item.population
+                        ).toLocaleString()}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info">
+
+                        <small>
+                        Öncelik
+                        </small>
+
+                        <strong>
+                        ${item.priority}/100
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info">
+
+                        <small>
+                        Ayrılan kaynak
+                        </small>
+
+                        <strong>
+                        ${Number(
+                            item.allocated_resource
+                        ).toLocaleString()}
+                        </strong>
+
                     </div>
 
                 </div>
 
-
-                <div
-                class="info-grid">
-
-                    <div class="info">
-                        <small>
-                            Afet Şiddeti
-                        </small>
-                        <b>
-                            ${item.severity}
-                        </b>
-                    </div>
-
-
-                    <div class="info">
-                        <small>
-                            Nüfus
-                        </small>
-                        <b>
-                            ${formatNumber(
-                                item.population
-                            )}
-                        </b>
-                    </div>
-
-
-                    <div class="info">
-                        <small>
-                            Kaynak Payı
-                        </small>
-                        <b>
-                            %${item.percentage}
-                        </b>
-                    </div>
-
-
-                    <div class="info">
-                        <small>
-                            Önerilen Kaynak
-                        </small>
-                        <b>
-                            ${formatNumber(
-                                item.allocated_resource
-                            )}
-                        </b>
-                    </div>
-
-                </div>
             `;
 
-
-            container.appendChild(
-                result
-            );
+            resultContainer
+                .appendChild(div);
 
         }
     );
@@ -1451,58 +1204,9 @@ function displayResults(
 }
 
 
-/* --------------------------------
-   HARİTAYA AFET BÖLGELERİ
--------------------------------- */
-
-function addRegionMarkers(
-    results
-) {
-
-    results.forEach(
-        region => {
-
-            if (
-                region.lat === null ||
-                region.lon === null
-            ) {
-                return;
-            }
-
-
-            L.circleMarker([
-                region.lat,
-                region.lon
-            ], {
-                radius: 11
-            })
-            .addTo(map)
-            .bindPopup(`
-                <b>🔴
-                ${region.name}
-                </b>
-                <br><br>
-                Öncelik:
-                ${region.priority}/100
-                <br>
-                Durum:
-                ${region.status}
-                <br>
-                Kaynak:
-                ${formatNumber(
-                    region.allocated_resource
-                )}
-            `);
-
-        }
-    );
-
-}
-
-
-/* --------------------------------
-   EN UYGUN HASTANE
--------------------------------- */
+///////////////////////////////////////////////////////////
+// EN UYGUN HASTANE
+///////////////////////////////////////////////////////////
 
 async function findBestHospital() {
 
@@ -1512,385 +1216,412 @@ async function findBestHospital() {
         ).value;
 
 
-    const container =
+    const box =
         document.getElementById(
             "hospitalRecommendation"
         );
 
 
-    container.innerHTML =
-        "⏳ Hastaneler karşılaştırılıyor...";
+    box.innerHTML = `
+        <div class="recommendation">
+        🚑 Rotalar hesaplanıyor...
+        </div>
+    `;
 
 
-    try {
+    const response =
+        await fetch(
+            "/hospital-recommendation",
+            {
 
-        const response =
-            await fetch(
-                "/recommend-hospital",
-                {
+                method: "POST",
 
-                    method:
-                        "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            ambulance_id:
-                                ambulanceId
-                        })
-                }
-            );
+                body:
+                    JSON.stringify({
+                        ambulance_id:
+                            ambulanceId
+                    })
+            }
+        );
 
 
-        const data =
-            await response.json();
+    const data =
+        await response.json();
 
 
-        if (!response.ok) {
+    if (data.error) {
 
-            container.innerHTML =
-                `<div class="error"
-                style="display:block">
-                ${data.error}
-                </div>`;
-
-            return;
-        }
-
-
-        const best =
-            data.recommended;
-
-
-        container.innerHTML = `
-
-            <div
-            class="success">
-
-                🚑
-                <b>
-                    ÖNERİLEN HASTANE
-                </b>
-
-                <br><br>
-
-                🏥
-                <b>
-                    ${best.hospital.name}
-                </b>
-
-                <br>
-
-                ⏱️ Tahmini ulaşım:
-                <b>
-                    ${best.estimated_minutes}
-                    dakika
-                </b>
-
-                <br>
-
-                📊 Doluluk:
-                <b>
-                    %${best.hospital.capacity}
-                </b>
-
-                <br>
-
-                👨‍⚕️ Personel yükü:
-                <b>
-                    %${best.hospital.staff_load}
-                </b>
-
-                <br>
-
-                🛏️ Kullanılabilir yatak:
-                <b>
-                    ${best.hospital.beds_available}
-                </b>
-
+        box.innerHTML = `
+            <div class="alert">
+            ${data.error}
             </div>
         `;
 
-
-        calculateRoute(
-            ambulanceId,
-            best.hospital.id
-        );
-
-    }
-
-    catch (error) {
-
-        container.innerHTML =
-            "Hastane önerisi alınamadı.";
-
-    }
-
-}
-
-
-/* --------------------------------
-   ROTA HESAPLA
--------------------------------- */
-
-async function calculateRoute(
-    ambulanceId,
-    hospitalId
-) {
-
-    const ambulance =
-        ambulances.find(
-            item =>
-                item.id ===
-                ambulanceId
-        );
-
-
-    const hospital =
-        hospitals.find(
-            item =>
-                item.id ===
-                hospitalId
-        );
-
-
-    if (!ambulance || !hospital) {
         return;
     }
 
 
-    const routesContainer =
+    const best =
+        data.recommended;
+
+
+    box.innerHTML = `
+
+        <div class="recommendation">
+
+            <h3>
+            🏆 Önerilen Hastane
+            </h3>
+
+            <br>
+
+            <strong>
+            ${best.hospital.name}
+            </strong>
+
+            <br><br>
+
+            🚑 Ambulans:
+            ${data.ambulance.name}
+
+            <br>
+
+            ⏱️ Tahmini süre:
+            ${best.duration_minutes} dakika
+
+            <br>
+
+            📏 Mesafe:
+            ${best.distance_km} km
+
+            <br>
+
+            🛏️ Boş yatak:
+            ${best.hospital.beds_available}
+
+            <br>
+
+            😓 Personel yorgunluğu:
+            %${best.hospital.fatigue}
+
+            <br>
+
+            📊 Uygunluk puanı:
+            ${best.suitability}/100
+
+        </div>
+
+    `;
+
+
+    // ROTALARI GÖSTER
+
+    const routeContainer =
+        document.getElementById(
+            "routes"
+        );
+
+    routeContainer.innerHTML = "";
+
+
+    data.hospitals.forEach(
+        (item, index) => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "route-card " +
+                (
+                    index === 0
+                    ? "route-best"
+                    : ""
+                );
+
+
+            div.innerHTML = `
+
+                <h3>
+                ${
+                    index === 0
+                    ? "🏆 "
+                    : "🏥 "
+                }
+
+                ${item.hospital.name}
+
+                </h3>
+
+                <br>
+
+                ⏱️ Süre:
+                ${item.duration_minutes}
+                dakika
+
+                <br>
+
+                📏 Mesafe:
+                ${item.distance_km}
+                km
+
+                <br>
+
+                🛏️ Boş yatak:
+                ${item.hospital.beds_available}
+
+                <br>
+
+                😓 Personel yorgunluğu:
+                %${item.hospital.fatigue}
+
+                <br>
+
+                📊 Uygunluk:
+                ${item.suitability}/100
+
+            `;
+
+
+            routeContainer
+                .appendChild(div);
+
+
+            // EN İYİ ROTAYI HARİTADA ÇİZ
+
+            if (index === 0) {
+
+                drawRoute(
+                    item.route
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+///////////////////////////////////////////////////////////
+// ROTA ÇİZ
+///////////////////////////////////////////////////////////
+
+function drawRoute(route) {
+
+    routeLayers.forEach(
+        layer => map.removeLayer(layer)
+    );
+
+    routeLayers = [];
+
+
+    const coordinates =
+        route.geometry.coordinates.map(
+            point => [
+                point[1],
+                point[0]
+            ]
+        );
+
+
+    const line =
+        L.polyline(
+            coordinates,
+            {
+                weight: 6
+            }
+        ).addTo(map);
+
+
+    routeLayers.push(line);
+
+
+    map.fitBounds(
+        line.getBounds(),
+        {
+            padding: [30, 30]
+        }
+    );
+
+
+    // YOL ADIMLARINI GÖSTER
+
+    let instructions = [];
+
+
+    route.legs.forEach(
+        leg => {
+
+            leg.steps.forEach(
+                step => {
+
+                    if (
+                        step.name &&
+                        step.name.trim()
+                    ) {
+
+                        instructions.push(
+                            step.name
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    const routeBox =
         document.getElementById(
             "routes"
         );
 
 
-    routesContainer.innerHTML =
-        "🛣️ Rotalar hesaplanıyor...";
+    if (instructions.length) {
 
-
-    try {
-
-        const response =
-            await fetch(
-                "/route",
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            start_lat:
-                                ambulance.lat,
-
-                            start_lon:
-                                ambulance.lon,
-
-                            end_lat:
-                                hospital.lat,
-
-                            end_lon:
-                                hospital.lon
-
-                        })
-                }
+        const instructionDiv =
+            document.createElement(
+                "div"
             );
 
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            routesContainer.innerHTML =
-                data.error;
-
-            return;
-        }
+        instructionDiv.className =
+            "route-card";
 
 
-        routeLayers.forEach(
-            layer =>
-                map.removeLayer(
-                    layer
-                )
-        );
+        instructionDiv.innerHTML = `
+
+            <h3>
+            🛣️ Önerilen güzergâhtaki yollar
+            </h3>
+
+            <br>
+
+            ${[
+                ...new Set(instructions)
+            ]
+            .slice(0, 10)
+            .map(
+                road =>
+                `➡️ ${road}`
+            )
+            .join("<br>")}
+
+        `;
 
 
-        routeLayers = [];
-
-
-        routesContainer.innerHTML = "";
-
-
-        data.routes.forEach(
-            (route,index) => {
-
-                const isBest =
-                    index === 0;
-
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "route-card " +
-                    (
-                        isBest
-                        ? "route-best"
-                        : ""
-                    );
-
-
-                card.innerHTML = `
-
-                    <h3>
-                        🛣️ Rota
-                        ${route.route_number}
-
-                        ${
-                            isBest
-                            ? " ⭐ ÖNERİLEN"
-                            : ""
-                        }
-                    </h3>
-
-                    <br>
-
-                    📏 Mesafe:
-                    <b>
-                        ${route.distance_km}
-                        km
-                    </b>
-
-                    <br>
-
-                    ⏱️ Tahmini süre:
-                    <b>
-                        ${route.duration_min}
-                        dakika
-                    </b>
-
-                `;
-
-
-                routesContainer.appendChild(
-                    card
-                );
-
-
-                const line =
-                    L.geoJSON(
-                        route.geometry
-                    ).addTo(map);
-
-
-                routeLayers.push(
-                    line
-                );
-
-            }
-        );
-
-    }
-
-    catch (error) {
-
-        routesContainer.innerHTML =
-            "Rota servisine ulaşılamadı.";
-
+        routeBox
+            .appendChild(
+                instructionDiv
+            );
     }
 
 }
 
 
-/* --------------------------------
-   SAYI FORMAT
--------------------------------- */
+///////////////////////////////////////////////////////////
+// HASTANELERİ GÖSTER
+///////////////////////////////////////////////////////////
 
-function formatNumber(
-    number
-) {
+function renderHospitals() {
 
-    return Number(number)
-        .toLocaleString(
-            "tr-TR",
-            {
-                maximumFractionDigits:
-                    2
-            }
-        );
-
-}
-
-
-/* --------------------------------
-   HTML GÜVENLİĞİ
--------------------------------- */
-
-function escapeHtml(
-    text
-) {
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-    div.textContent =
-        text;
-
-    return div.innerHTML;
-
-}
-
-
-/* --------------------------------
-   HATA
--------------------------------- */
-
-function showError(
-    message
-) {
-
-    const error =
+    const container =
         document.getElementById(
-            "error"
+            "hospitalList"
         );
 
-    error.textContent =
-        message;
 
-    error.style.display =
-        "block";
+    container.innerHTML = "";
+
+
+    hospitals.forEach(
+        hospital => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "hospital-card";
+
+
+            div.innerHTML = `
+
+                <h3>
+                🏥 ${hospital.name}
+                </h3>
+
+                Doluluk:
+                %${hospital.capacity}
+
+                <div class="bar">
+
+                    <div
+                    class="bar-inner"
+                    style="
+                    width:${hospital.capacity}%
+                    ">
+
+                    </div>
+
+                </div>
+
+
+                Personel yorgunluğu:
+                %${hospital.fatigue}
+
+                <div class="bar">
+
+                    <div
+                    class="bar-inner"
+                    style="
+                    width:${hospital.fatigue}%
+                    ">
+
+                    </div>
+
+                </div>
+
+
+                🛏️ Kullanılabilir yatak:
+                <strong>
+                ${hospital.beds_available}
+                </strong>
+
+            `;
+
+
+            container
+                .appendChild(div);
+
+        }
+    );
 
 }
 
 
-/* --------------------------------
-   BAŞLAT
--------------------------------- */
+///////////////////////////////////////////////////////////
+// BAŞLAT
+///////////////////////////////////////////////////////////
 
-addRegion();
+window.onload = function() {
 
-initializeMap();
+    addRegion();
 
-displayHospitals();
+    initMap();
+
+    renderHospitals();
+
+};
 
 </script>
 
