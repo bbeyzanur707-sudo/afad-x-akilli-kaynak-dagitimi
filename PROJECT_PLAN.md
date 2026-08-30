@@ -1,166 +1,231 @@
-# 🚨 Afet-X Akıllı Kaynak Dağıtımı
+# 🚨 Afet-X Proje Planı
 
-## 📌 Proje Tanımı
+## 1. Proje Vizyonu
 
-Afet-X, afet bölgelerinde mevcut kaynakların ihtiyaç ve afet
-şiddetine göre daha hızlı ve verimli dağıtılmasına yardımcı olan
-akıllı bir karar destek sistemidir.
-
-Sistem, farklı afet bölgelerinden alınan verileri analiz ederek
-hangi bölgenin daha yüksek önceliğe sahip olduğunu belirler.
+Afet-X'i afet sırasında kaynak, ambulans, hastane ve
+ulaşım kararlarını destekleyen bütünleşik bir sistem
+haline getirmek.
 
 ---
 
-# 🎯 Projenin Amacı
+# 2. Temel Sistem
 
-Afet sırasında;
+Sistem dört ana bölümden oluşur:
 
-- Kaynakların yetersiz kalmasını önlemek
-- Kritik bölgeleri hızlı şekilde belirlemek
-- Kaynakların dengeli dağıtılmasını sağlamak
-- Karar verme sürecini hızlandırmak
-- Veri temelli kaynak dağıtımı yapmak
-
-amaçlanmaktadır.
+1. Afet Analizi
+2. Akıllı Kaynak Dağıtımı
+3. Ambulans ve Rota Yönetimi
+4. Hastane Durum Analizi
 
 ---
 
-# 🧠 Sistem Nasıl Çalışır?
+# 3. Afet Analizi
 
-Kullanıcı sisteme aşağıdaki bilgileri girer:
+Her afet bölgesi için:
 
-1. Toplam kullanılabilir kaynak
-2. Afet bölgesi
-3. Afet şiddeti
-4. Bölge nüfusu
-5. Bölgenin ihtiyaç miktarı
+- Afet şiddeti
+- Nüfus
+- İhtiyaç
 
-Sistem bu verileri analiz eder.
+bilgileri değerlendirilir.
 
-Ardından her bölge için bir
-**öncelik puanı** oluşturur.
+Bölgeler öncelik puanına göre sıralanır.
 
 ---
 
-# 📊 Öncelik Hesaplama
+# 4. Akıllı Kaynak Dağıtımı
 
-Sistemde öncelik puanı üç temel faktöre göre hesaplanmaktadır.
+Toplam kullanılabilir kaynak,
+bölgelerin öncelik puanlarına göre
+oransal olarak dağıtılır.
 
-### Afet Şiddeti
-
-Ağırlık:
-
-**%50**
-
-Afetin bölge üzerindeki etkisini temsil eder.
-
-### Nüfus
-
-Ağırlık:
-
-**%20**
-
-Daha fazla kişinin etkilendiği bölgelerin
-önceliğinin belirlenmesine katkı sağlar.
-
-### İhtiyaç
-
-Ağırlık:
-
-**%30**
-
-Bölgedeki kaynak ihtiyacını temsil eder.
+Amaç sınırlı kaynağın daha kritik
+bölgelere yönlendirilmesine yardımcı olmaktır.
 
 ---
 
-# 🚦 Öncelik Seviyeleri
+# 5. Akıllı Harita
 
-| Puan | Seviye |
-|---|---|
-| 75-100 | 🔴 Kritik |
-| 50-74 | 🟠 Acil |
-| 25-49 | 🟡 Orta |
-| 0-24 | 🟢 Düşük |
+Harita üzerinde:
+
+- Afet bölgeleri
+- Hastaneler
+- Ambulanslar
+- Ambulans rotaları
+
+gösterilir.
 
 ---
 
-# 💰 Akıllı Kaynak Dağıtımı
+# 6. Ambulans Rota Sistemi
 
-Sistem toplam kullanılabilir kaynağı,
-bölgelerin öncelik puanlarına göre dağıtır.
+Ambulansın bulunduğu konum ile
+hastane arasındaki alternatif rotalar
+hesaplanır.
+
+Her rota için:
+
+- Mesafe
+- Tahmini süre
+
+gösterilir.
+
+Sistem en hızlı rotayı öne çıkarır.
+
+---
+
+# 7. Hastane Karar Sistemi
+
+Hastaneler aşağıdaki faktörlere göre
+karşılaştırılır:
+
+- Ulaşım süresi
+- Hastane doluluk oranı
+- Personel yükü
+- Kullanılabilir yatak
+
+Amaç yalnızca en yakın hastaneyi değil,
+duruma göre daha uygun hastaneyi
+belirlemeye yardımcı olmaktır.
+
+---
+
+# 8. Personel Yükü
+
+Prototipte hastane personel yükü
+0-100 arasında gösterilmektedir.
 
 Örneğin:
 
-Toplam kaynak:
+0-30 = Düşük yük
 
-**100.000**
+31-60 = Orta yük
 
-olduğunda sistem bölgelerin öncelik seviyelerini
-hesaplayarak her bölge için önerilen kaynak miktarını
-oluşturur.
+61-80 = Yüksek yük
 
----
+81-100 = Kritik yük
 
-# 🤖 Akıllı Sistem Önerisi
-
-Sistem analiz sonucunda en yüksek önceliğe sahip bölgeyi
-belirler.
-
-Örneğin:
-
-> Hatay bölgesi kritik önceliktedir.
-> Öncelik puanı 91/100.
-> Kaynakların önemli bir bölümünün bu bölgeye
-> yönlendirilmesi önerilmektedir.
-
-Bu özellik karar vericiye hızlı bir özet sunmayı amaçlar.
+Gerçek sistemde bu değerlerin
+hastane bilgi sistemlerinden gelen
+verilerle oluşturulması hedeflenmektedir.
 
 ---
 
-# 🖥️ Kullanıcı Arayüzü
+# 9. Gelecek Aşamalar
 
-Sistemde:
+## Aşama 1
 
-- Kaynak giriş alanı
-- Afet bölgesi ekleme
-- Afet şiddeti girişi
-- Nüfus girişi
-- İhtiyaç girişi
-- Analiz butonu
-- Öncelik puanı
-- Kaynak dağılımı
-- Kritik bölge göstergesi
-- Akıllı sistem önerisi
+Temel afet kaynak dağıtımı.
 
-bulunmaktadır.
+## Aşama 2
+
+Etkileşimli harita.
+
+## Aşama 3
+
+Ambulans ve hastane sistemi.
+
+## Aşama 4
+
+Alternatif rota hesaplama.
+
+## Aşama 5
+
+Hastane kapasite analizi.
+
+## Aşama 6
+
+Gerçek zamanlı trafik.
+
+## Aşama 7
+
+Yol kapanmaları.
+
+## Aşama 8
+
+Gerçek zamanlı hastane kapasitesi.
+
+## Aşama 9
+
+Gerçek ambulans konumları.
+
+## Aşama 10
+
+Yapay zekâ destekli tahmin sistemi.
 
 ---
 
-# 🛠️ Kullanılan Teknolojiler
+# 10. Nihai Sistem
 
-- Python
-- Flask
-- HTML
-- CSS
-- JavaScript
-- GitHub
-- Render
+Hedeflenen sistem akışı:
+
+AFET
+
+↓
+
+VERİ TOPLAMA
+
+↓
+
+AFET ANALİZİ
+
+↓
+
+KRİTİK BÖLGE BELİRLEME
+
+↓
+
+KAYNAK DAĞITIMI
+
+↓
+
+AMBULANS KONUMLARI
+
+↓
+
+HASTANE ANALİZİ
+
+↓
+
+ROTA KARŞILAŞTIRMA
+
+↓
+
+EN UYGUN HASTANE
+
+↓
+
+EN UYGUN ROTA
+
+↓
+
+KARAR DESTEĞİ
 
 ---
 
-# 📁 Proje Dosya Yapısı
+# 11. Projenin Yenilikçi Yönü
 
-```text
-afet-x-akilli-kaynak-dagitimi/
+Afet-X yalnızca kaynak dağıtımı yapmayı değil,
+afet yönetiminde farklı kararları tek bir
+platform üzerinde birleştirmeyi hedeflemektedir.
 
-├── data/
-│   └── regions.csv
-│
-├── templates/
-│   └── index.html
-│
-├── app.py
-├── render.yaml
-├── requirements.txt
-├── README.md
-└── PROJECT_PLAN.md
+Sistem;
+
+"Kaynak nereye gönderilmeli?"
+
+"Ambulans hangi hastaneye gitmeli?"
+
+"Ambulans hangi rotayı kullanmalı?"
+
+"Hangi hastanenin kapasitesi daha uygun?"
+
+sorularına veri destekli cevap üretmeyi amaçlamaktadır.
+
+---
+
+# 12. Uzun Vadeli Hedef
+
+Afet-X'in gerçek zamanlı verilerle çalışan,
+afet yönetimi ekiplerine karar desteği sağlayan
+kapsamlı bir afet lojistik platformuna
+dönüştürülmesi hedeflenmektedir.
