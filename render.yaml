@@ -1,15 +1,16 @@
 services:
   - type: web
-    name: afad-x
+    name: afet-x-akilli-kaynak-dagitimi
     runtime: python
     plan: free
 
     buildCommand: pip install -r requirements.txt
 
-    startCommand: streamlit run app.py --server.address 0.0.0.0 --server.port $PORT
+    startCommand: gunicorn app:app
 
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
 
-    autoDeploy: true
+      - key: SECRET_KEY
+        generateValue: true
