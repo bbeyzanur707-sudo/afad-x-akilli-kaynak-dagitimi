@@ -1,10 +1,5 @@
-from flask import Flask, render_template, request, url_for
-from werkzeug.utils import secure_filename
-from PIL import Image, UnidentifiedImageError
-import io
-import numpy as np
+from flask import Flask, render_template, request
 import os
-import uuid
 
 
 # =============================================================================
@@ -13,204 +8,140 @@ import uuid
 
 app = Flask(__name__)
 
-# Maksimum dosya boyutu: 16 MB
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
-# Yüklenen dosyaların kaydedileceği klasör
-UPLOAD_FOLDER = os.path.join("static", "uploads")
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# =============================================================================
+# UYGULAMA AYARLARI
+# =============================================================================
 
-# Klasör yoksa oluştur
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "afad-x-gelistirme-anahtari"
+)
 
 
 # =============================================================================
-# İZİN VERİLEN DOSYA UZANTILARI
+# ÖNCELİK SKORU HESAPLAMA
 # =============================================================================
 
-ALLOWED_EXTENSIONS = {
-    "png",
-    "jpg",
-    "jpeg"
-}
-
-
-def allowed_file(filename):
+def oncelik_skoru_hesapla(afet_siddeti, nufus, ihtiyac_miktari):
     """
-    Dosya uzantısının izin verilen türlerden biri olup olmadığını kontrol eder.
+    Afet bölgesinin öncelik skorunu hesaplar.
+
+    Ağırlıklar:
+    - Afet Şiddeti: %50
+    - Nüfus: %20
+    - İhtiyaç Miktarı: %30
+
+    Tüm değerlerin 0-100 arasında olması beklenir.
     """
 
-    if not filename:
-        return False
+    skor = (
+        (afet_siddeti * 0.50)
+        + (nufus * 0.20)
+        + (ihtiyac_miktari * 0.30)
+    )
 
-    if "." not in filename:
-        return False
-
-    extension = filename.rsplit(".", 1)[1].lower()
-
-    return extension in ALLOWED_EXTENSIONS
+    return round(skor, 2)
 
 
 # =============================================================================
-# GÖRÜNTÜ ANALİZİ
+# ÖNCELİK SEVİYESİ
 # =============================================================================
 
-def analiz_et(image_bytes):
+def oncelik_seviyesi_belirle(skor):
     """
-    Görüntü üzerinde basit RGB tabanlı analiz yapar.
+    Hesaplanan skora göre öncelik seviyesini belirler.
+    """
 
-    NOT:
-    Bu gerçek bir yapay zeka hastalık teşhis sistemi değildir.
-    Eğitim/demo amaçlı basit bir görüntü analizidir.
+    if skor >= 80:
+        return "Çok Yüksek"
+
+    elif skor >= 60:
+        return "Yüksek"
+
+    elif skor >= 40:
+        return "Orta"
+
+    else:
+        return "Düşük"
+
+
+# =============================================================================
+# KAYNAK DAĞITIMI
+# =============================================================================
+
+def kaynak_dagit(sonuclar, toplam_kaynak):
+    """
+    Toplam kaynağı bölgelerin öncelik skorlarına göre dağıtır.
+
+    Her bölgenin aldığı kaynak:
+    
+    Bölge Skoru / Toplam Skor × Toplam Kaynak
+    """
+
+    if not sonuclar:
+        return []
+
+    toplam_skor = sum(
+        sonuc["skor"]
+        for sonuc in sonuclar
+    )
+
+    if toplam_skor <= 0:
+        return sonuclar
+
+    for sonuc in sonuclar:
+
+        pay = (
+            sonuc["skor"]
+            / toplam_skor
+        )
+
+        sonuc["kaynak_orani"] = round(
+            pay * 100,
+            2
+        )
+
+        sonuc["tahmini_kaynak"] = round(
+            toplam_kaynak * pay,
+            2
+        )
+
+    return sonuclar
+
+
+# =============================================================================
+# FORM VERİSİ KONTROLÜ
+# =============================================================================
+
+def sayi_al(form, alan_adi):
+    """
+    Formdan sayısal değer alır.
     """
 
     try:
 
-        # ---------------------------------------------------------------------
-        # Görüntüyü aç
-        # ---------------------------------------------------------------------
-
-        img = Image.open(
-            io.BytesIO(image_bytes)
-        ).convert("RGB")
-
-        # Orijinal görüntü boyutu
-        orijinal_genislik, orijinal_yukseklik = img.size
-
-        # ---------------------------------------------------------------------
-        # Analiz için standart boyuta getir
-        # ---------------------------------------------------------------------
-
-        img_resized = img.resize(
-            (224, 224)
+        return float(
+            form.get(alan_adi, "").replace(",", ".")
         )
 
-        # ---------------------------------------------------------------------
-        # NumPy dizisine dönüştür
-        # ---------------------------------------------------------------------
+    except (ValueError, AttributeError):
 
-        img_array = np.asarray(
-            img_resized,
-            dtype=np.float32
+        raise ValueError(
+            f"{alan_adi} alanı geçerli bir sayı olmalıdır."
         )
 
-        # ---------------------------------------------------------------------
-        # Ortalama RGB değerleri
-        # ---------------------------------------------------------------------
 
-        ortalama_renk = np.mean(
-            img_array,
-            axis=(0, 1)
+def yuzluk_deger_kontrol(deger, alan_adi):
+    """
+    Değerin 0-100 arasında olup olmadığını kontrol eder.
+    """
+
+    if deger < 0 or deger > 100:
+
+        raise ValueError(
+            f"{alan_adi} 0 ile 100 arasında olmalıdır."
         )
-
-        r = float(ortalama_renk[0])
-        g = float(ortalama_renk[1])
-        b = float(ortalama_renk[2])
-
-        # ---------------------------------------------------------------------
-        # Renk toplamı
-        # ---------------------------------------------------------------------
-
-        toplam = r + g + b
-
-        if toplam <= 0:
-
-            return {
-                "hata": "Görüntünün renk değerleri analiz edilemedi."
-            }
-
-        # ---------------------------------------------------------------------
-        # RGB yüzdeleri
-        # ---------------------------------------------------------------------
-
-        r_oran = (r / toplam) * 100
-        g_oran = (g / toplam) * 100
-        b_oran = (b / toplam) * 100
-
-        # ---------------------------------------------------------------------
-        # Basit analiz
-        # ---------------------------------------------------------------------
-
-        if g > r and g > b:
-
-            durum = "Sağlıklı Doku"
-
-            skor = g_oran
-
-            detay = (
-                "Görüntüde yeşil renk baskın görünüyor. "
-                "Bu sonuç normal veya sağlıklı pigmentasyon "
-                "ile uyumlu olabilir."
-            )
-
-        elif r > g and r > b:
-
-            durum = "Enfeksiyon / Nekroz Belirtisi"
-
-            skor = r_oran
-
-            detay = (
-                "Görüntüde kırmızı renk baskın görünüyor. "
-                "Kızarıklık, kuruma veya doku değişikliği "
-                "bulunabilir."
-            )
-
-        else:
-
-            durum = "Mantar / Lekelenme Riski"
-
-            skor = b_oran
-
-            detay = (
-                "Görüntüde belirgin bir yeşil veya kırmızı "
-                "baskınlığı bulunmuyor. Renk değişikliği, "
-                "lekelenme veya başka bir anormallik "
-                "bulunabilir."
-            )
-
-        # ---------------------------------------------------------------------
-        # Sonuç
-        # ---------------------------------------------------------------------
-
-        return {
-
-            "durum": durum,
-
-            "guven_skoru": f"%{skor:.2f}",
-
-            "detay": detay,
-
-            "boyut": (
-                f"{orijinal_genislik}x"
-                f"{orijinal_yukseklik}"
-            ),
-
-            "rgb": {
-
-                "kirmizi": round(r, 2),
-
-                "yesil": round(g, 2),
-
-                "mavi": round(b, 2)
-
-            }
-
-        }
-
-    except UnidentifiedImageError:
-
-        return {
-            "hata": "Yüklenen dosya geçerli bir görüntü değil."
-        }
-
-    except Exception as e:
-
-        return {
-            "hata": (
-                "Görüntü analiz edilirken hata oluştu: "
-                f"{str(e)}"
-            )
-        }
 
 
 # =============================================================================
@@ -220,237 +151,168 @@ def analiz_et(image_bytes):
 @app.route("/", methods=["GET", "POST"])
 def index():
 
-    # -------------------------------------------------------------------------
-    # GET
-    # -------------------------------------------------------------------------
+    sonuc = None
+    hata = None
 
-    if request.method == "GET":
+    if request.method == "POST":
 
-        return render_template(
-            "index.html"
-        )
+        try:
 
-    # -------------------------------------------------------------------------
-    # POST - Dosya kontrolü
-    # -------------------------------------------------------------------------
+            # -------------------------------------------------------------
+            # Form bilgilerini al
+            # -------------------------------------------------------------
 
-    if "file" not in request.files:
+            bolge_adi = request.form.get(
+                "bolge_adi",
+                ""
+            ).strip()
 
-        return render_template(
-            "index.html",
-            hata="Formda dosya bulunamadı."
-        )
+            if not bolge_adi:
 
-    file = request.files["file"]
+                raise ValueError(
+                    "Afet bölgesi adı boş bırakılamaz."
+                )
 
-    # -------------------------------------------------------------------------
-    # Dosya seçilmiş mi?
-    # -------------------------------------------------------------------------
+            # -------------------------------------------------------------
+            # Değerleri al
+            # -------------------------------------------------------------
 
-    if file.filename == "":
-
-        return render_template(
-            "index.html",
-            hata="Herhangi bir resim seçilmedi."
-        )
-
-    # -------------------------------------------------------------------------
-    # Uzantı kontrolü
-    # -------------------------------------------------------------------------
-
-    if not allowed_file(file.filename):
-
-        return render_template(
-            "index.html",
-            hata=(
-                "Geçersiz dosya formatı! "
-                "Sadece PNG, JPG ve JPEG dosyaları "
-                "yükleyebilirsiniz."
+            afet_siddeti = sayi_al(
+                request.form,
+                "afet_siddeti"
             )
-        )
 
-    # -------------------------------------------------------------------------
-    # Dosyayı oku
-    # -------------------------------------------------------------------------
-
-    try:
-
-        file_bytes = file.read()
-
-    except Exception as e:
-
-        return render_template(
-            "index.html",
-            hata=f"Dosya okunamadı: {str(e)}"
-        )
-
-    # -------------------------------------------------------------------------
-    # Boş dosya kontrolü
-    # -------------------------------------------------------------------------
-
-    if not file_bytes:
-
-        return render_template(
-            "index.html",
-            hata="Yüklenen dosya boş."
-        )
-
-    # -------------------------------------------------------------------------
-    # Gerçek görüntü dosyası mı?
-    # -------------------------------------------------------------------------
-
-    try:
-
-        image = Image.open(
-            io.BytesIO(file_bytes)
-        )
-
-        # Dosyanın gerçekten okunabilir olduğunu kontrol et
-        image.verify()
-
-        # verify sonrasında görüntüyü yeniden aç
-        image = Image.open(
-            io.BytesIO(file_bytes)
-        ).convert("RGB")
-
-    except UnidentifiedImageError:
-
-        return render_template(
-            "index.html",
-            hata="Dosya geçerli bir görüntü değil."
-        )
-
-    except Exception as e:
-
-        return render_template(
-            "index.html",
-            hata=f"Görüntü dosyası okunamadı: {str(e)}"
-        )
-
-    # -------------------------------------------------------------------------
-    # Görüntüyü analiz et
-    # -------------------------------------------------------------------------
-
-    analiz_sonucu = analiz_et(
-        file_bytes
-    )
-
-    # -------------------------------------------------------------------------
-    # Benzersiz dosya adı
-    # -------------------------------------------------------------------------
-
-    guvenli_dosya_adi = secure_filename(
-        file.filename
-    )
-
-    if "." in guvenli_dosya_adi:
-
-        uzanti = guvenli_dosya_adi.rsplit(
-            ".",
-            1
-        )[1].lower()
-
-    else:
-
-        uzanti = "jpg"
-
-    # UUID kullanarak benzersiz isim oluştur
-    yeni_dosya_adi = (
-        f"{uuid.uuid4().hex}.{uzanti}"
-    )
-
-    # -------------------------------------------------------------------------
-    # Dosya yolu
-    # -------------------------------------------------------------------------
-
-    filepath = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        yeni_dosya_adi
-    )
-
-    # -------------------------------------------------------------------------
-    # Görüntüyü kaydet
-    # -------------------------------------------------------------------------
-
-    try:
-
-        # JPEG olarak kaydet
-        image.save(
-            filepath,
-            "JPEG",
-            quality=90
-        )
-
-    except Exception as e:
-
-        return render_template(
-            "index.html",
-            hata=(
-                "Görüntü kaydedilemedi: "
-                f"{str(e)}"
+            nufus = sayi_al(
+                request.form,
+                "nufus"
             )
-        )
 
-    # -------------------------------------------------------------------------
-    # Tarayıcıda gösterilecek URL
-    # -------------------------------------------------------------------------
+            ihtiyac_miktari = sayi_al(
+                request.form,
+                "ihtiyac_miktari"
+            )
 
-    resim_yolu = url_for(
-        "static",
-        filename=f"uploads/{yeni_dosya_adi}"
+            toplam_kaynak = sayi_al(
+                request.form,
+                "toplam_kaynak"
+            )
+
+            # -------------------------------------------------------------
+            # Değerleri kontrol et
+            # -------------------------------------------------------------
+
+            yuzluk_deger_kontrol(
+                afet_siddeti,
+                "Afet Şiddeti"
+            )
+
+            yuzluk_deger_kontrol(
+                nufus,
+                "Nüfus"
+            )
+
+            yuzluk_deger_kontrol(
+                ihtiyac_miktari,
+                "İhtiyaç Miktarı"
+            )
+
+            if toplam_kaynak <= 0:
+
+                raise ValueError(
+                    "Toplam kaynak 0'dan büyük olmalıdır."
+                )
+
+            # -------------------------------------------------------------
+            # Öncelik skoru
+            # -------------------------------------------------------------
+
+            skor = oncelik_skoru_hesapla(
+                afet_siddeti,
+                nufus,
+                ihtiyac_miktari
+            )
+
+            seviye = oncelik_seviyesi_belirle(
+                skor
+            )
+
+            # -------------------------------------------------------------
+            # Sonuç
+            # -------------------------------------------------------------
+
+            sonuc = {
+                "bolge_adi": bolge_adi,
+
+                "afet_siddeti": afet_siddeti,
+
+                "nufus": nufus,
+
+                "ihtiyac_miktari": ihtiyac_miktari,
+
+                "toplam_kaynak": toplam_kaynak,
+
+                "skor": skor,
+
+                "seviye": seviye
+            }
+
+            # -------------------------------------------------------------
+            # Tek bölge için kaynak miktarı
+            #
+            # Tek bölge olduğundan mevcut kaynağın tamamı
+            # bu bölgeye ayrılır.
+            # -------------------------------------------------------------
+
+            sonuc["kaynak_orani"] = 100
+
+            sonuc["tahmini_kaynak"] = toplam_kaynak
+
+        except ValueError as e:
+
+            hata = str(e)
+
+        except Exception as e:
+
+            hata = (
+                "Beklenmeyen bir hata oluştu: "
+                + str(e)
+            )
+
+    return render_template(
+        "index.html",
+        sonuc=sonuc,
+        hata=hata
     )
 
-    # -------------------------------------------------------------------------
-    # Sonucu gönder
-    # -------------------------------------------------------------------------
 
-    return render_template(
-        "index.html",
-        sonuc=analiz_sonucu,
-        resim_yolu=resim_yolu
-    )
+# =============================================================================
+# SAĞLIK KONTROLÜ
+# =============================================================================
+
+@app.route("/health")
+def health():
+
+    return {
+        "status": "ok",
+        "project": "Afet-X Akıllı Kaynak Dağıtımı"
+    }
 
 
 # =============================================================================
-# DOSYA ÇOK BÜYÜK HATASI
-# =============================================================================
-
-@app.errorhandler(413)
-def dosya_cok_buyuk(error):
-
-    return render_template(
-        "index.html",
-        hata=(
-            "Dosya çok büyük! "
-            "Maksimum dosya boyutu 16 MB olabilir."
-        )
-    ), 413
-
-
-# =============================================================================
-# GENEL HATA YAKALAMA
-# =============================================================================
-
-@app.errorhandler(500)
-def sunucu_hatasi(error):
-
-    return render_template(
-        "index.html",
-        hata=(
-            "Sunucu tarafında beklenmeyen "
-            "bir hata oluştu."
-        )
-    ), 500
-
-
-# =============================================================================
-# UYGULAMAYI BAŞLAT
+# UYGULAMAYI ÇALIŞTIR
 # =============================================================================
 
 if __name__ == "__main__":
 
+    port = int(
+        os.environ.get(
+            "PORT",
+            5000
+        )
+    )
+
     app.run(
-        host="127.0.0.1",
-        port=5000,
+        host="0.0.0.0",
+        port=port,
         debug=True
     )
