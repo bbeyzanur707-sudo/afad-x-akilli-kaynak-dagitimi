@@ -1,15 +1,11 @@
 from flask import Flask, render_template, request, jsonify
-import os
 import requests
 
 app = Flask(__name__)
 
-
-# -------------------------------------------------
+# =========================================================
 # ÖRNEK HASTANELER
-# Gerçek projede bu bilgiler resmi verilerle
-# güncellenebilir.
-# -------------------------------------------------
+# =========================================================
 
 HOSPITALS = [
     {
@@ -19,6 +15,7 @@ HOSPITALS = [
         "lon": 36.1600,
         "capacity": 78,
         "staff_load": 72,
+        "fatigue": 72,
         "beds_available": 110
     },
     {
@@ -28,6 +25,7 @@ HOSPITALS = [
         "lon": 36.1500,
         "capacity": 61,
         "staff_load": 55,
+        "fatigue": 55,
         "beds_available": 185
     },
     {
@@ -37,14 +35,14 @@ HOSPITALS = [
         "lon": 36.1400,
         "capacity": 42,
         "staff_load": 35,
+        "fatigue": 35,
         "beds_available": 260
     }
 ]
 
-
-# -------------------------------------------------
+# =========================================================
 # ÖRNEK AMBULANSLAR
-# -------------------------------------------------
+# =========================================================
 
 AMBULANCES = [
     {
@@ -71,9 +69,9 @@ AMBULANCES = [
 ]
 
 
-# -------------------------------------------------
+# =========================================================
 # NORMALİZASYON
-# -------------------------------------------------
+# =========================================================
 
 def normalize(values):
 
@@ -87,15 +85,14 @@ def normalize(values):
         return [50 for _ in values]
 
     return [
-        ((value - minimum) /
-         (maximum - minimum)) * 100
+        ((value - minimum) / (maximum - minimum)) * 100
         for value in values
     ]
 
 
-# -------------------------------------------------
-# AFET BÖLGESİ ANALİZİ
-# -------------------------------------------------
+# =========================================================
+# AFET BÖLGELERİ ANALİZİ
+# =========================================================
 
 def analyze_regions(regions, total_resource):
 
@@ -109,13 +106,8 @@ def analyze_regions(regions, total_resource):
         for region in regions
     ]
 
-    normalized_population = normalize(
-        populations
-    )
-
-    normalized_need = normalize(
-        needs
-    )
+    normalized_population = normalize(populations)
+    normalized_need = normalize(needs)
 
     results = []
 
@@ -142,20 +134,18 @@ def analyze_regions(regions, total_resource):
                 2
             ),
 
-            "population":
-                populations[index],
+            "population": populations[index],
 
-            "need":
-                needs[index],
+            "need": needs[index],
 
-            "priority":
-                round(priority, 2),
+            "priority": round(
+                priority,
+                2
+            ),
 
-            "lat":
-                region.get("lat"),
+            "lat": region.get("lat"),
 
-            "lon":
-                region.get("lon")
+            "lon": region.get("lon")
         })
 
     total_priority = sum(
@@ -203,9 +193,9 @@ def analyze_regions(regions, total_resource):
     return results
 
 
-# -------------------------------------------------
-# YAPAY ZEKA TARZI ÖNERİ
-# -------------------------------------------------
+# =========================================================
+# SİSTEM ÖNERİSİ
+# =========================================================
 
 def generate_recommendation(results):
 
@@ -214,37 +204,19 @@ def generate_recommendation(results):
 
     top = results[0]
 
-    if top["status"] == "Kritik":
-
-        return (
-            f"{top['name']} bölgesi kritik "
-            f"önceliktedir. Öncelik puanı "
-            f"{top['priority']}/100. "
-            f"Kaynakların yaklaşık "
-            f"%{top['percentage']} oranının "
-            f"bu bölgeye yönlendirilmesi "
-            f"önerilmektedir."
-        )
-
-    if top["status"] == "Acil":
-
-        return (
-            f"{top['name']} bölgesi acil "
-            f"müdahale gerektiriyor. "
-            f"Öncelik puanı "
-            f"{top['priority']}/100."
-        )
-
     return (
-        f"{top['name']} mevcut veriler "
-        f"içinde en yüksek önceliğe "
-        f"sahiptir."
+        f"{top['name']} bölgesi en yüksek "
+        f"önceliğe sahip. Öncelik puanı "
+        f"{top['priority']}/100. "
+        f"Kaynakların yaklaşık "
+        f"%{top['percentage']} oranının "
+        f"bu bölgeye yönlendirilmesi öneriliyor."
     )
 
 
-# -------------------------------------------------
+# =========================================================
 # ANA SAYFA
-# -------------------------------------------------
+# =========================================================
 
 @app.route("/")
 def index():
@@ -256,9 +228,9 @@ def index():
     )
 
 
-# -------------------------------------------------
+# =========================================================
 # AFET ANALİZİ
-# -------------------------------------------------
+# =========================================================
 
 @app.route(
     "/analyze",
@@ -269,10 +241,8 @@ def analyze():
     data = request.get_json()
 
     if not data:
-
         return jsonify({
-            "error":
-                "Veri alınamadı."
+            "error": "Veri alınamadı."
         }), 400
 
     regions = data.get(
@@ -292,8 +262,7 @@ def analyze():
     except (ValueError, TypeError):
 
         return jsonify({
-            "error":
-                "Kaynak miktarı geçersiz."
+            "error": "Kaynak miktarı geçersiz."
         }), 400
 
     if total_resource <= 0:
@@ -331,8 +300,7 @@ def analyze():
 
     return jsonify({
 
-        "results":
-            results,
+        "results": results,
 
         "critical_count":
             critical_count,
@@ -350,42 +318,71 @@ def analyze():
     })
 
 
-# -------------------------------------------------
+# =========================================================
 # HASTANELER
-# -------------------------------------------------
+# =========================================================
 
 @app.route("/hospitals")
 def hospitals():
 
-    return jsonify(
-        HOSPITALS
-    )
+    return jsonify(HOSPITALS)
 
 
-# -------------------------------------------------
+# =========================================================
 # AMBULANSLAR
-# -------------------------------------------------
+# =========================================================
 
 @app.route("/ambulances")
 def ambulances():
 
-    return jsonify(
-        AMBULANCES
+    return jsonify(AMBULANCES)
+
+
+# =========================================================
+# TEK ROTA
+# =========================================================
+
+def get_osrm_route(
+    start_lat,
+    start_lon,
+    end_lat,
+    end_lon
+):
+
+    url = (
+        "https://router.project-osrm.org/"
+        "route/v1/driving/"
+        f"{start_lon},{start_lat};"
+        f"{end_lon},{end_lat}"
     )
 
+    params = {
+        "overview": "full",
+        "geometries": "geojson",
+        "steps": "true",
+        "alternatives": "true"
+    }
 
-# -------------------------------------------------
-# ROTA HESAPLAMA
-#
-# OSRM açık rota servisi kullanılır.
-# Prototip için uygundur.
-# -------------------------------------------------
+    response = requests.get(
+        url,
+        params=params,
+        timeout=15
+    )
+
+    response.raise_for_status()
+
+    return response.json()
+
+
+# =========================================================
+# AMBULANS → HASTANE ROTA ANALİZİ
+# =========================================================
 
 @app.route(
-    "/route",
+    "/hospital-recommendation",
     methods=["POST"]
 )
-def route():
+def hospital_recommendation():
 
     data = request.get_json()
 
@@ -393,40 +390,206 @@ def route():
 
         return jsonify({
             "error":
-                "Rota bilgisi bulunamadı."
+                "Ambulans bilgisi bulunamadı."
         }), 400
 
-    try:
+    ambulance_id = data.get(
+        "ambulance_id"
+    )
 
-        start_lat = float(
-            data["start_lat"]
-        )
+    ambulance = next(
+        (
+            a for a in AMBULANCES
+            if a["id"] == ambulance_id
+        ),
+        None
+    )
 
-        start_lon = float(
-            data["start_lon"]
-        )
-
-        end_lat = float(
-            data["end_lat"]
-        )
-
-        end_lon = float(
-            data["end_lon"]
-        )
-
-    except (
-        KeyError,
-        ValueError,
-        TypeError
-    ):
+    if not ambulance:
 
         return jsonify({
             "error":
-                "Konum bilgileri geçersiz."
+                "Ambulans bulunamadı."
+        }), 404
+
+    if ambulance["status"] != "Müsait":
+
+        return jsonify({
+            "error":
+                "Seçilen ambulans şu anda görevde."
         }), 400
 
+    candidates = []
 
-    url = (
-        "https://router.project-osrm.org/"
-        f"route/v1/driving/"
-        f"{start_lon},{start_lat};"
+    for hospital in HOSPITALS:
+
+        try:
+
+            route_data = get_osrm_route(
+                ambulance["lat"],
+                ambulance["lon"],
+                hospital["lat"],
+                hospital["lon"]
+            )
+
+            routes = route_data.get(
+                "routes",
+                []
+            )
+
+            if not routes:
+                continue
+
+            best_route = min(
+                routes,
+                key=lambda r: r["duration"]
+            )
+
+            duration_minutes = (
+                best_route["duration"] / 60
+            )
+
+            distance_km = (
+                best_route["distance"] / 1000
+            )
+
+            # -------------------------------------------------
+            # HASTANE UYGUNLUK PUANI
+            #
+            # Süre          %45
+            # Boş yatak     %25
+            # Doluluk       %15
+            # Yorgunluk     %15
+            # -------------------------------------------------
+
+            time_score = max(
+                0,
+                100 - duration_minutes * 3
+            )
+
+            bed_score = min(
+                hospital["beds_available"] / 300 * 100,
+                100
+            )
+
+            occupancy_score = (
+                100 - hospital["capacity"]
+            )
+
+            fatigue_score = (
+                100 - hospital["fatigue"]
+            )
+
+            suitability = (
+                time_score * 0.45
+                + bed_score * 0.25
+                + occupancy_score * 0.15
+                + fatigue_score * 0.15
+            )
+
+            candidates.append({
+
+                "hospital": hospital,
+
+                "duration_minutes":
+                    round(
+                        duration_minutes,
+                        1
+                    ),
+
+                "distance_km":
+                    round(
+                        distance_km,
+                        2
+                    ),
+
+                "suitability":
+                    round(
+                        suitability,
+                        2
+                    ),
+
+                "route": best_route,
+
+                "alternatives":
+                    routes
+            })
+
+        except Exception as error:
+
+            print(
+                "Rota hatası:",
+                error
+            )
+
+    if not candidates:
+
+        return jsonify({
+            "error":
+                "Rota hesaplanamadı. Harita servisi şu anda kullanılamıyor."
+        }), 503
+
+    candidates.sort(
+        key=lambda x:
+            x["suitability"],
+        reverse=True
+    )
+
+    best = candidates[0]
+
+    return jsonify({
+
+        "ambulance": ambulance,
+
+        "recommended": best,
+
+        "hospitals": candidates,
+
+        "message": (
+            f"{best['hospital']['name']} "
+            f"öneriliyor. Tahmini ulaşım "
+            f"süresi {best['duration_minutes']} dakika."
+        )
+    })
+
+
+# =========================================================
+# SAĞLIK DURUMU
+# =========================================================
+
+@app.route("/health")
+def health():
+
+    return jsonify({
+        "status": "ok",
+        "project": "Afet-X",
+        "version": "2.0"
+    })
+
+
+# =========================================================
+# UYGULAMAYI ÇALIŞTIR
+# =========================================================
+
+if __name__ == "__main__":
+
+    port = 5000
+
+    try:
+        import os
+
+        port = int(
+            os.environ.get(
+                "PORT",
+                5000
+            )
+        )
+
+    except Exception:
+        pass
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
