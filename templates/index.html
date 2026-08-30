@@ -22,6 +22,7 @@
 
         body {
             margin: 0;
+
             font-family:
                 Arial,
                 Helvetica,
@@ -35,49 +36,56 @@
                 );
 
             color: #172033;
-            min-height: 100vh;
         }
 
         .container {
-            width: 92%;
-            max-width: 1150px;
-            margin: 0 auto;
+            width: 94%;
+
+            max-width: 1250px;
+
+            margin: auto;
         }
 
-        /* ==============================================================
+        /* =============================================================
            HEADER
-        ============================================================== */
+        ============================================================= */
 
         header {
-            padding: 35px 0 25px;
             text-align: center;
+
+            padding: 40px 0 25px;
         }
 
         .logo {
-            display: inline-flex;
+            width: 70px;
+
+            height: 70px;
+
+            display: flex;
+
             align-items: center;
+
             justify-content: center;
 
-            width: 65px;
-            height: 65px;
+            margin: auto;
 
-            border-radius: 18px;
+            border-radius: 20px;
 
             background: #1d4ed8;
 
             color: white;
 
-            font-size: 30px;
+            font-size: 32px;
 
-            margin-bottom: 15px;
+            box-shadow:
+                0 10px 25px
+                rgba(29, 78, 216, 0.25);
         }
 
         header h1 {
-            margin: 0;
+            margin: 18px 0 8px;
 
-            font-size: 36px;
-
-            color: #172033;
+            font-size: 38px;
         }
 
         header h1 span {
@@ -85,32 +93,14 @@
         }
 
         header p {
-            margin-top: 12px;
-
             color: #64748b;
 
             font-size: 16px;
         }
 
-        /* ==============================================================
-           GRID
-        ============================================================== */
-
-        .main-grid {
-            display: grid;
-
-            grid-template-columns:
-                minmax(300px, 1fr)
-                minmax(300px, 1fr);
-
-            gap: 25px;
-
-            padding-bottom: 30px;
-        }
-
-        /* ==============================================================
+        /* =============================================================
            CARD
-        ============================================================== */
+        ============================================================= */
 
         .card {
             background: white;
@@ -119,69 +109,62 @@
 
             padding: 28px;
 
-            box-shadow:
-                0 10px 30px
-                rgba(15, 23, 42, 0.08);
+            margin-bottom: 25px;
 
             border: 1px solid #e2e8f0;
+
+            box-shadow:
+                0 10px 30px
+                rgba(15, 23, 42, 0.07);
         }
 
         .card h2 {
             margin-top: 0;
-
-            margin-bottom: 8px;
-
-            font-size: 23px;
         }
 
-        .card-description {
-            color: #64748b;
+        /* =============================================================
+           TOP GRID
+        ============================================================= */
 
-            line-height: 1.6;
+        .top-grid {
+            display: grid;
 
+            grid-template-columns:
+                1fr 320px;
+
+            gap: 25px;
+        }
+
+        /* =============================================================
+           SOURCE
+        ============================================================= */
+
+        .resource-input {
             margin-bottom: 25px;
         }
 
-        /* ==============================================================
-           FORM
-        ============================================================== */
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
+        label {
             display: block;
-
-            font-weight: bold;
 
             margin-bottom: 7px;
 
+            font-weight: bold;
+
             color: #334155;
-        }
-
-        .form-group small {
-            display: block;
-
-            margin-top: 5px;
-
-            color: #94a3b8;
         }
 
         input {
             width: 100%;
 
-            padding: 13px 14px;
+            padding: 12px 13px;
 
             border: 1px solid #cbd5e1;
 
-            border-radius: 10px;
+            border-radius: 9px;
 
             font-size: 15px;
 
             outline: none;
-
-            transition: 0.2s;
         }
 
         input:focus {
@@ -192,327 +175,388 @@
                 rgba(37, 99, 235, 0.1);
         }
 
-        .button {
-            width: 100%;
+        /* =============================================================
+           REGION ROW
+        ============================================================= */
+
+        .region {
+            display: grid;
+
+            grid-template-columns:
+                1.4fr
+                1fr
+                1fr
+                1fr
+                auto;
+
+            gap: 10px;
 
             padding: 15px;
 
+            margin-bottom: 12px;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+        }
+
+        .region-number {
+            grid-column: 1 / -1;
+
+            color: #1d4ed8;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+        .remove-btn {
+            align-self: end;
+
             border: none;
 
-            border-radius: 11px;
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            padding: 12px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+        }
+
+        .remove-btn:hover {
+            background: #fecaca;
+        }
+
+        .add-btn {
+            width: 100%;
+
+            padding: 13px;
+
+            border: 2px dashed #93c5fd;
+
+            background: #eff6ff;
+
+            color: #1d4ed8;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+            margin-top: 8px;
+        }
+
+        .add-btn:hover {
+            background: #dbeafe;
+        }
+
+        .calculate-btn {
+            width: 100%;
+
+            margin-top: 20px;
+
+            padding: 16px;
+
+            border: none;
+
+            border-radius: 10px;
 
             background: #1d4ed8;
 
             color: white;
 
-            font-size: 16px;
+            font-size: 17px;
 
             font-weight: bold;
 
             cursor: pointer;
-
-            transition: 0.2s;
         }
 
-        .button:hover {
+        .calculate-btn:hover {
             background: #1e40af;
-
-            transform: translateY(-1px);
         }
 
-        /* ==============================================================
+        /* =============================================================
            ERROR
-        ============================================================== */
+        ============================================================= */
 
         .error {
             background: #fef2f2;
 
-            color: #991b1b;
-
             border: 1px solid #fecaca;
 
-            border-radius: 11px;
+            color: #991b1b;
 
             padding: 15px;
+
+            border-radius: 10px;
 
             margin-bottom: 20px;
         }
 
-        /* ==============================================================
-           RESULT
-        ============================================================== */
+        /* =============================================================
+           SIDE INFO
+        ============================================================= */
 
-        .result-card {
-            text-align: center;
-        }
-
-        .region-name {
-            color: #64748b;
-
-            margin-bottom: 15px;
-        }
-
-        .score-circle {
-            width: 180px;
-            height: 180px;
-
-            margin: 20px auto;
-
-            border-radius: 50%;
-
+        .weight-box {
             display: flex;
 
-            flex-direction: column;
+            justify-content: space-between;
 
-            align-items: center;
+            padding: 14px;
 
-            justify-content: center;
+            margin-bottom: 10px;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #dbeafe,
-                    #eff6ff
-                );
+            background: #f8fafc;
 
-            border: 10px solid #3b82f6;
+            border-radius: 10px;
         }
 
-        .score-number {
-            font-size: 42px;
-
-            font-weight: bold;
-
+        .weight-box strong {
             color: #1d4ed8;
         }
 
-        .score-label {
-            color: #64748b;
+        .formula {
+            margin-top: 20px;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background: #0f172a;
+
+            color: white;
+
+            font-family: monospace;
+
+            line-height: 1.7;
 
             font-size: 13px;
         }
 
-        .priority {
-            display: inline-block;
+        /* =============================================================
+           SUMMARY
+        ============================================================= */
 
-            padding: 9px 18px;
+        .summary {
+            display: grid;
 
-            border-radius: 30px;
+            grid-template-columns:
+                repeat(4, 1fr);
 
-            font-weight: bold;
-
-            background: #dbeafe;
-
-            color: #1d4ed8;
+            gap: 15px;
 
             margin-bottom: 25px;
         }
 
-        /* ==============================================================
-           RESULT DETAILS
-        ============================================================== */
-
-        .details {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 12px;
-
-            text-align: left;
-        }
-
-        .detail-box {
-            background: #f8fafc;
-
-            border-radius: 11px;
-
-            padding: 15px;
-        }
-
-        .detail-box span {
-            display: block;
-
-            color: #64748b;
-
-            font-size: 13px;
-
-            margin-bottom: 5px;
-        }
-
-        .detail-box strong {
-            font-size: 20px;
-        }
-
-        /* ==============================================================
-           RESOURCE
-        ============================================================== */
-
-        .resource-box {
-            margin-top: 20px;
-
+        .summary-box {
             padding: 20px;
 
-            border-radius: 13px;
-
-            background: #f0fdf4;
-
-            border: 1px solid #bbf7d0;
-        }
-
-        .resource-box h3 {
-            margin-top: 0;
-
-            color: #166534;
-        }
-
-        .resource-number {
-            font-size: 30px;
-
-            font-weight: bold;
-
-            color: #15803d;
-        }
-
-        /* ==============================================================
-           INFO SECTION
-        ============================================================== */
-
-        .info-card {
-            margin-bottom: 30px;
-        }
-
-        .formula {
-            background: #0f172a;
-
-            color: #e2e8f0;
-
-            padding: 20px;
-
-            border-radius: 12px;
-
-            font-family:
-                Consolas,
-                monospace;
-
-            line-height: 1.8;
-
-            overflow-x: auto;
-        }
-
-        .weights {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 15px;
-
-            margin-top: 20px;
-        }
-
-        .weight {
-            padding: 20px;
-
-            text-align: center;
-
-            background: #f8fafc;
-
-            border-radius: 12px;
+            background: white;
 
             border: 1px solid #e2e8f0;
+
+            border-radius: 14px;
+
+            text-align: center;
         }
 
-        .weight strong {
+        .summary-box strong {
             display: block;
 
             font-size: 28px;
 
             color: #1d4ed8;
 
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
-        .weight span {
+        .summary-box span {
             color: #64748b;
+
+            font-size: 13px;
         }
 
-        /* ==============================================================
-           WARNING
-        ============================================================== */
+        /* =============================================================
+           TABLE
+        ============================================================= */
 
-        .warning {
-            margin-top: 20px;
-
-            padding: 16px;
-
-            background: #fffbeb;
-
-            border: 1px solid #fde68a;
-
-            border-radius: 11px;
-
-            color: #92400e;
-
-            line-height: 1.5;
+        .table-wrapper {
+            overflow-x: auto;
         }
 
-        /* ==============================================================
-           FOOTER
-        ============================================================== */
+        table {
+            width: 100%;
 
-        footer {
+            border-collapse: collapse;
+
+            min-width: 900px;
+        }
+
+        th {
+            background: #f1f5f9;
+
+            color: #334155;
+
+            text-align: left;
+
+            padding: 14px;
+        }
+
+        td {
+            padding: 14px;
+
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .rank {
+            font-weight: bold;
+
+            font-size: 18px;
+        }
+
+        .score {
+            font-weight: bold;
+
+            font-size: 19px;
+
+            color: #1d4ed8;
+        }
+
+        .badge {
+            display: inline-block;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        .cok-yuksek {
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+        .yuksek {
+            background: #ffedd5;
+
+            color: #9a3412;
+        }
+
+        .orta {
+            background: #fef9c3;
+
+            color: #854d0e;
+        }
+
+        .dusuk {
+            background: #dcfce7;
+
+            color: #166534;
+        }
+
+        /* =============================================================
+           RESOURCE BAR
+        ============================================================= */
+
+        .bar-container {
+            width: 150px;
+
+            height: 9px;
+
+            background: #e2e8f0;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+
+            background: #2563eb;
+        }
+
+        /* =============================================================
+           EMPTY
+        ============================================================= */
+
+        .empty {
             text-align: center;
 
+            padding: 50px 20px;
+
             color: #64748b;
-
-            padding: 25px 0 40px;
-
-            font-size: 14px;
         }
 
-        /* ==============================================================
-           MOBILE
-        ============================================================== */
+        .empty-icon {
+            font-size: 50px;
 
-        @media (max-width: 800px) {
+            margin-bottom: 15px;
+        }
 
-            .main-grid {
+        /* =============================================================
+           RESPONSIVE
+        ============================================================= */
+
+        @media (max-width: 1000px) {
+
+            .top-grid {
                 grid-template-columns: 1fr;
             }
+
+            .region {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+            .remove-btn {
+                grid-column: 1 / -1;
+            }
+
+        }
+
+        @media (max-width: 700px) {
 
             header h1 {
                 font-size: 28px;
             }
 
-            .weights {
+            .summary {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+            .region {
                 grid-template-columns: 1fr;
             }
 
         }
 
-        @media (max-width: 500px) {
+        @media (max-width: 450px) {
 
-            .container {
-                width: 95%;
+            .summary {
+                grid-template-columns: 1fr;
             }
 
             .card {
                 padding: 20px;
-            }
-
-            .details {
-                grid-template-columns: 1fr;
-            }
-
-            .score-circle {
-                width: 155px;
-                height: 155px;
-            }
-
-            .score-number {
-                font-size: 35px;
             }
 
         }
@@ -524,12 +568,13 @@
 
 <body>
 
+
 <div class="container">
 
 
-    <!-- ==============================================================
+    <!-- =============================================================
          HEADER
-    ============================================================== -->
+    ============================================================= -->
 
     <header>
 
@@ -545,452 +590,461 @@
         </h1>
 
         <p>
-            Afet bölgelerinin önceliklendirilmesi ve kaynakların
-            ihtiyaçlara göre dağıtılması
+            Afet bölgelerini analiz edin, önceliklendirin
+            ve kaynakları akıllı şekilde dağıtın.
         </p>
 
     </header>
 
 
-    <!-- ==============================================================
-         ANA ALAN
-    ============================================================== -->
+    <!-- =============================================================
+         HATA
+    ============================================================= -->
 
-    <div class="main-grid">
+    {% if hata %}
+
+        <div class="error">
+
+            <strong>
+                ⚠️ Hata:
+            </strong>
+
+            {{ hata }}
+
+        </div>
+
+    {% endif %}
 
 
-        <!-- ==========================================================
-             FORM
-        =========================================================== -->
+    <!-- =============================================================
+         GİRİŞ ALANI
+    ============================================================= -->
+
+    <div class="top-grid">
+
 
         <div class="card">
 
             <h2>
-                📍 Afet Bölgesi Analizi
+                📍 Afet Bölgeleri
             </h2>
 
-            <p class="card-description">
-                Afet bölgesine ait bilgileri girerek öncelik
-                skorunu hesaplayın.
+            <p style="color:#64748b;">
+                Bir veya birden fazla afet bölgesi ekleyin.
+                Sistem bölgeleri otomatik olarak karşılaştıracaktır.
             </p>
 
 
-            {% if hata %}
+            <div class="resource-input">
 
-                <div class="error">
+                <label for="toplam_kaynak">
+                    Toplam Kullanılabilir Kaynak
+                </label>
 
-                    <strong>
-                        Hata:
-                    </strong>
+                <input
+                    id="toplam_kaynak"
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    placeholder="Örn: 100000"
+                >
 
-                    {{ hata }}
+            </div>
 
-                </div>
 
-            {% endif %}
+            <div id="regions"></div>
+
+
+            <button
+                type="button"
+                class="add-btn"
+                onclick="bolgeEkle()"
+            >
+                + Yeni Afet Bölgesi Ekle
+            </button>
 
 
             <form
+                id="analysisForm"
                 method="POST"
                 action="/"
             >
 
+                <input
+                    type="hidden"
+                    name="toplam_kaynak"
+                    id="hidden_resource"
+                >
 
-                <!-- Bölge -->
-
-                <div class="form-group">
-
-                    <label for="bolge_adi">
-                        Afet Bölgesi
-                    </label>
-
-                    <input
-                        type="text"
-                        id="bolge_adi"
-                        name="bolge_adi"
-                        placeholder="Örn: Hatay"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- Afet Şiddeti -->
-
-                <div class="form-group">
-
-                    <label for="afet_siddeti">
-                        Afet Şiddeti
-                    </label>
-
-                    <input
-                        type="number"
-                        id="afet_siddeti"
-                        name="afet_siddeti"
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        placeholder="0 - 100"
-                        required
-                    >
-
-                    <small>
-                        0 = düşük, 100 = çok yüksek
-                    </small>
-
-                </div>
-
-
-                <!-- Nüfus -->
-
-                <div class="form-group">
-
-                    <label for="nufus">
-                        Nüfus Skoru
-                    </label>
-
-                    <input
-                        type="number"
-                        id="nufus"
-                        name="nufus"
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        placeholder="0 - 100"
-                        required
-                    >
-
-                    <small>
-                        Bölgedeki nüfus yoğunluğunu 0-100 arasında
-                        değerlendirin.
-                    </small>
-
-                </div>
-
-
-                <!-- İhtiyaç -->
-
-                <div class="form-group">
-
-                    <label for="ihtiyac_miktari">
-                        İhtiyaç Miktarı
-                    </label>
-
-                    <input
-                        type="number"
-                        id="ihtiyac_miktari"
-                        name="ihtiyac_miktari"
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        placeholder="0 - 100"
-                        required
-                    >
-
-                    <small>
-                        0 = düşük ihtiyaç, 100 = çok yüksek ihtiyaç
-                    </small>
-
-                </div>
-
-
-                <!-- Kaynak -->
-
-                <div class="form-group">
-
-                    <label for="toplam_kaynak">
-                        Toplam Kaynak
-                    </label>
-
-                    <input
-                        type="number"
-                        id="toplam_kaynak"
-                        name="toplam_kaynak"
-                        min="1"
-                        step="0.01"
-                        placeholder="Örn: 10000"
-                        required
-                    >
-
-                    <small>
-                        Dağıtılabilecek toplam kaynak miktarı.
-                    </small>
-
-                </div>
-
+                <input
+                    type="hidden"
+                    name="bolgeler_json"
+                    id="regions_json"
+                >
 
                 <button
                     type="submit"
-                    class="button"
+                    class="calculate-btn"
+                    onclick="verileriHazirla()"
                 >
-                    ⚡ Öncelik Skorunu Hesapla
+                    ⚡ Tüm Bölgeleri Analiz Et
                 </button>
-
 
             </form>
 
         </div>
 
 
-        <!-- ==========================================================
-             SONUÇ
-        =========================================================== -->
+        <!-- =========================================================
+             BİLGİ
+        ========================================================== -->
 
-        <div class="card result-card">
+        <div class="card">
 
             <h2>
-                📊 Analiz Sonucu
+                🧮 Hesaplama Sistemi
             </h2>
 
+            <p style="color:#64748b; line-height:1.6;">
+                Sistem bölgeleri kendi içerisinde karşılaştırır.
+                Nüfus ve ihtiyaç miktarları otomatik olarak
+                0-100 aralığına normalize edilir.
+            </p>
 
-            {% if sonuc %}
 
-                <p class="region-name">
-
-                    {{ sonuc.bolge_adi }}
-
-                </p>
-
-
-                <!-- Skor -->
-
-                <div class="score-circle">
-
-                    <div class="score-number">
-
-                        {{ sonuc.skor }}
-
-                    </div>
-
-                    <div class="score-label">
-
-                        / 100
-
-                    </div>
-
-                </div>
-
-
-                <!-- Öncelik -->
-
-                <div class="priority">
-
-                    Öncelik:
-                    {{ sonuc.seviye }}
-
-                </div>
-
-
-                <!-- Detaylar -->
-
-                <div class="details">
-
-
-                    <div class="detail-box">
-
-                        <span>
-                            Afet Şiddeti
-                        </span>
-
-                        <strong>
-                            {{ sonuc.afet_siddeti }}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail-box">
-
-                        <span>
-                            Nüfus
-                        </span>
-
-                        <strong>
-                            {{ sonuc.nufus }}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail-box">
-
-                        <span>
-                            İhtiyaç
-                        </span>
-
-                        <strong>
-                            {{ sonuc.ihtiyac_miktari }}
-                        </strong>
-
-                    </div>
-
-
-                    <div class="detail-box">
-
-                        <span>
-                            Kaynak Payı
-                        </span>
-
-                        <strong>
-                            %{{ sonuc.kaynak_orani }}
-                        </strong>
-
-                    </div>
-
-
-                </div>
-
-
-                <!-- Kaynak -->
-
-                <div class="resource-box">
-
-                    <h3>
-                        Önerilen Kaynak
-                    </h3>
-
-                    <div class="resource-number">
-
-                        {{ sonuc.tahmini_kaynak }}
-
-                    </div>
-
-                    <p>
-                        Toplam mevcut kaynağın
-                        %{{ sonuc.kaynak_orani }}
-                        bu bölgeye ayrılması önerilmektedir.
-                    </p>
-
-                </div>
-
-
-            {% else %}
-
-                <div style="
-                    padding: 60px 20px;
-                    color: #64748b;
-                ">
-
-                    <div style="
-                        font-size: 55px;
-                        margin-bottom: 15px;
-                    ">
-                        📈
-                    </div>
-
-                    <h3>
-                        Henüz analiz yapılmadı
-                    </h3>
-
-                    <p>
-                        Sol taraftaki bilgileri doldurun ve
-                        öncelik skorunu hesaplayın.
-                    </p>
-
-                </div>
-
-            {% endif %}
-
-
-        </div>
-
-    </div>
-
-
-    <!-- ==============================================================
-         FORMÜL
-    ============================================================== -->
-
-    <div class="card info-card">
-
-        <h2>
-            🧮 Öncelik Skoru Nasıl Hesaplanıyor?
-        </h2>
-
-        <p class="card-description">
-
-            Sistem üç temel kriteri ağırlıklandırarak afet
-            bölgesinin öncelik skorunu 0-100 arasında hesaplar.
-
-        </p>
-
-
-        <div class="formula">
-
-            Öncelik Skoru =
-            (Afet Şiddeti × 0.50)
-            +
-            (Nüfus × 0.20)
-            +
-            (İhtiyaç Miktarı × 0.30)
-
-        </div>
-
-
-        <div class="weights">
-
-
-            <div class="weight">
-
-                <strong>
-                    %50
-                </strong>
+            <div class="weight-box">
 
                 <span>
                     Afet Şiddeti
                 </span>
 
+                <strong>
+                    %50
+                </strong>
+
             </div>
 
 
-            <div class="weight">
-
-                <strong>
-                    %20
-                </strong>
+            <div class="weight-box">
 
                 <span>
                     Nüfus
                 </span>
 
+                <strong>
+                    %20
+                </strong>
+
             </div>
 
 
-            <div class="weight">
+            <div class="weight-box">
+
+                <span>
+                    İhtiyaç
+                </span>
 
                 <strong>
                     %30
                 </strong>
 
-                <span>
-                    İhtiyaç Miktarı
-                </span>
-
             </div>
 
 
-        </div>
+            <div class="formula">
 
+                Öncelik =<br>
 
-        <div class="warning">
+                (Afet × 0.50)<br>
+                + (Nüfus × 0.20)<br>
+                + (İhtiyaç × 0.30)
 
-            ⚠️
-            <strong>Not:</strong>
-
-            Sistem karar destek amacıyla tasarlanmıştır.
-            Girilen verilerin doğruluğu, ortaya çıkan
-            öncelik skorunun doğruluğunu doğrudan etkiler.
-            Gerçek afet operasyonlarında uzman ekiplerin
-            değerlendirmeleri ve resmi veriler esas alınmalıdır.
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- ==============================================================
+    <!-- =============================================================
+         SONUÇLAR
+    ============================================================= -->
+
+    {% if analiz_yapildi %}
+
+
+        <div class="card">
+
+            <h2>
+                📊 Analiz Özeti
+            </h2>
+
+        </div>
+
+
+        <div class="summary">
+
+
+            <div class="summary-box">
+
+                <strong>
+                    {{ bolgeler|length }}
+                </strong>
+
+                <span>
+                    Analiz Edilen Bölge
+                </span>
+
+            </div>
+
+
+            <div class="summary-box">
+
+                <strong>
+                    {{ toplam_kaynak }}
+                </strong>
+
+                <span>
+                    Toplam Kaynak
+                </span>
+
+            </div>
+
+
+            <div class="summary-box">
+
+                <strong>
+                    {{ bolgeler[0].ad }}
+                </strong>
+
+                <span>
+                    En Öncelikli Bölge
+                </span>
+
+            </div>
+
+
+            <div class="summary-box">
+
+                <strong>
+                    {{ bolgeler[0].skor }}
+                </strong>
+
+                <span>
+                    En Yüksek Skor
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================================
+             TABLO
+        ========================================================== -->
+
+        <div class="card">
+
+            <h2>
+                🏆 Öncelik Sıralaması
+            </h2>
+
+            <p style="color:#64748b;">
+                Bölgeler en yüksek öncelik skorundan
+                en düşük skora doğru sıralanmıştır.
+            </p>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            Sıra
+                        </th>
+
+                        <th>
+                            Bölge
+                        </th>
+
+                        <th>
+                            Afet
+                        </th>
+
+                        <th>
+                            Nüfus
+                        </th>
+
+                        <th>
+                            İhtiyaç
+                        </th>
+
+                        <th>
+                            Öncelik
+                        </th>
+
+                        <th>
+                            Seviye
+                        </th>
+
+                        <th>
+                            Kaynak Payı
+                        </th>
+
+                        <th>
+                            Tahmini Kaynak
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for bolge in bolgeler %}
+
+                        <tr>
+
+                            <td>
+
+                                <span class="rank">
+
+                                    #{{ bolge.sira }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    {{ bolge.ad }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+                                {{ bolge.afet_siddeti }}
+                            </td>
+
+
+                            <td>
+                                {{ "{:,.0f}".format(bolge.nufus) }}
+                            </td>
+
+
+                            <td>
+                                {{ "{:,.0f}".format(bolge.ihtiyac) }}
+                            </td>
+
+
+                            <td>
+
+                                <span class="score">
+
+                                    {{ bolge.skor }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="badge {{ bolge.sinif }}"
+                                >
+
+                                    {{ bolge.seviye }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    %{{ bolge.kaynak_orani }}
+                                </strong>
+
+                                <div class="bar-container">
+
+                                    <div
+                                        class="bar"
+                                        style="width: {{ bolge.kaynak_orani }}%;"
+                                    ></div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+
+                                    {{
+                                        "{:,.2f}".format(
+                                            bolge.tahmini_kaynak
+                                        )
+                                    }}
+
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    {% else %}
+
+
+        <div class="card">
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    📊
+                </div>
+
+                <h2>
+                    Henüz analiz yapılmadı
+                </h2>
+
+                <p>
+                    En az bir afet bölgesi ekleyerek
+                    analizi başlatabilirsiniz.
+                </p>
+
+            </div>
+
+        </div>
+
+
+    {% endif %}
+
+
+    <!-- =============================================================
          FOOTER
-    ============================================================== -->
+    ============================================================= -->
 
     <footer>
 
@@ -1000,6 +1054,271 @@
 
 
 </div>
+
+
+<!-- =================================================================
+     JAVASCRIPT
+================================================================= -->
+
+<script>
+
+    let bolgeSayisi = 0;
+
+
+    // ================================================================
+    // BÖLGE EKLE
+    // ================================================================
+
+    function bolgeEkle() {
+
+        bolgeSayisi++;
+
+        const container =
+            document.getElementById(
+                "regions"
+            );
+
+
+        const region =
+            document.createElement(
+                "div"
+            );
+
+
+        region.className =
+            "region";
+
+
+        region.dataset.index =
+            bolgeSayisi;
+
+
+        region.innerHTML = `
+
+            <div class="region-number">
+                Bölge #${bolgeSayisi}
+            </div>
+
+
+            <div>
+
+                <label>
+                    Bölge Adı
+                </label>
+
+                <input
+                    type="text"
+                    class="region-name"
+                    placeholder="Örn: Hatay"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Afet Şiddeti
+                </label>
+
+                <input
+                    type="number"
+                    class="region-severity"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    placeholder="0-100"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Nüfus
+                </label>
+
+                <input
+                    type="number"
+                    class="region-population"
+                    min="1"
+                    step="1"
+                    placeholder="Örn: 1700000"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    İhtiyaç
+                </label>
+
+                <input
+                    type="number"
+                    class="region-need"
+                    min="1"
+                    step="1"
+                    placeholder="Örn: 8500"
+                >
+
+            </div>
+
+
+            <button
+                type="button"
+                class="remove-btn"
+                onclick="bolgeSil(this)"
+            >
+                Sil
+            </button>
+
+        `;
+
+
+        container.appendChild(
+            region
+        );
+
+    }
+
+
+    // ================================================================
+    // BÖLGE SİL
+    // ================================================================
+
+    function bolgeSil(button) {
+
+        const region =
+            button.closest(
+                ".region"
+            );
+
+
+        if (region) {
+
+            region.remove();
+
+        }
+
+    }
+
+
+    // ================================================================
+    // VERİLERİ HAZIRLA
+    // ================================================================
+
+    function verileriHazirla() {
+
+        const regions =
+            document.querySelectorAll(
+                ".region"
+            );
+
+
+        const data = [];
+
+
+        regions.forEach(
+            function(region) {
+
+                const ad =
+                    region
+                    .querySelector(
+                        ".region-name"
+                    )
+                    .value
+                    .trim();
+
+
+                const afet =
+                    region
+                    .querySelector(
+                        ".region-severity"
+                    )
+                    .value;
+
+
+                const nufus =
+                    region
+                    .querySelector(
+                        ".region-population"
+                    )
+                    .value;
+
+
+                const ihtiyac =
+                    region
+                    .querySelector(
+                        ".region-need"
+                    )
+                    .value;
+
+
+                data.push({
+
+                    ad: ad,
+
+                    afet_siddeti:
+                        parseFloat(
+                            afet
+                        ),
+
+                    nufus:
+                        parseFloat(
+                            nufus
+                        ),
+
+                    ihtiyac:
+                        parseFloat(
+                            ihtiyac
+                        )
+
+                });
+
+            }
+        );
+
+
+        const kaynak =
+            document.getElementById(
+                "toplam_kaynak"
+            ).value;
+
+
+        document.getElementById(
+            "regions_json"
+        ).value =
+            JSON.stringify(
+                data
+            );
+
+
+        document.getElementById(
+            "hidden_resource"
+        ).value =
+            kaynak;
+
+    }
+
+
+    // ================================================================
+    // SAYFA AÇILDIĞINDA İLK BÖLGE
+    // ================================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            bolgeEkle();
+
+        }
+    );
+
+</script>
+
 
 </body>
 
