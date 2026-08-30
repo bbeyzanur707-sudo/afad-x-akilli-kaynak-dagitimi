@@ -1,604 +1,232 @@
 from flask import Flask, render_template, request, jsonify
+import csv
 import os
-import json
-
-
-# =============================================================================
-# UYGULAMA
-# =============================================================================
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = os.environ.get(
-    "SECRET_KEY",
-    "afet-x-gelistirme-anahtari"
-)
 
-
-# =============================================================================
-# SABİTLER
-# =============================================================================
-
-AFET_AGIRLIK = 0.50
-NUFUS_AGIRLIK = 0.20
-IHTIYAC_AGIRLIK = 0.30
-
-
-# =============================================================================
-# SAYI KONTROLÜ
-# =============================================================================
-
-def pozitif_sayi(deger, alan):
+def calculate_priority(region):
     """
-    Değeri pozitif sayıya dönüştürür.
+    Afet bölgesinin öncelik puanını hesaplar.
+
+    Afet şiddeti: %50
+    Nüfus: %20
+    İhtiyaç: %30
     """
 
     try:
-        deger = float(str(deger).replace(",", "."))
+        severity = float(region.get("severity", 0))
+        population = float(region.get("population", 0))
+        need = float(region.get("need", 0))
+
+        severity = max(0, min(100, severity))
+
+        return {
+            "severity": severity,
+            "population": population,
+            "need": need
+        }
 
     except (ValueError, TypeError):
+        return {
+            "severity": 0,
+            "population": 0,
+            "need": 0
+        }
 
-        raise ValueError(
-            f"{alan} geçerli bir sayı olmalıdır."
+
+def normalize(values):
+    """Değerleri 0-100 arasına dönüştürür."""
+
+    if not values:
+        return []
+
+    minimum = min(values)
+    maximum = max(values)
+
+    if maximum == minimum:
+        return [50 for _ in values]
+
+    return [
+        ((value - minimum) / (maximum - minimum)) * 100
+        for value in values
+    ]
+
+
+def analyze_regions(regions, total_resource):
+    """Bütün bölgeleri analiz eder ve kaynak dağılımı oluşturur."""
+
+    if not regions:
+        return []
+
+    populations = [
+        float(region.get("population", 0))
+        for region in regions
+    ]
+
+    needs = [
+        float(region.get("need", 0))
+        for region in regions
+    ]
+
+    normalized_population = normalize(populations)
+    normalized_need = normalize(needs)
+
+    results = []
+
+    for index, region in enumerate(regions):
+
+        severity = float(region.get("severity", 0))
+
+        priority = (
+            severity * 0.50
+            + normalized_population[index] * 0.20
+            + normalized_need[index] * 0.30
         )
 
-    if deger < 0:
+        results.append({
+            "name": region.get("name", "Bilinmeyen Bölge"),
+            "severity": round(severity, 2),
+            "population": populations[index],
+            "need": needs[index],
+            "priority": round(priority, 2)
+        })
 
-        raise ValueError(
-            f"{alan} negatif olamaz."
-        )
+    total_priority = sum(item["priority"] for item in results)
 
-    return deger
+    for item in results:
 
+        if total_priority > 0:
+            share = item["priority"] / total_priority
+        else:
+            share = 0
 
-# =============================================================================
-# NORMALİZASYON
-# =============================================================================
-
-def normalize_et(deger, maksimum):
-    """
-    Bir değeri 0-100 arasına dönüştürür.
-    """
-
-    if maksimum <= 0:
-        return 0
-
-    return (deger / maksimum) * 100
-
-
-# =============================================================================
-# ÖNCELİK SEVİYESİ
-# =============================================================================
-
-def oncelik_seviyesi(skor):
-
-    if skor >= 80:
-        return "Çok Yüksek"
-
-    if skor >= 60:
-        return "Yüksek"
-
-    if skor >= 40:
-        return "Orta"
-
-    return "Düşük"
-
-
-# =============================================================================
-# ÖNCELİK RENGİ
-# =============================================================================
-
-def oncelik_sinifi(skor):
-
-    if skor >= 80:
-        return "cok-yuksek"
-
-    if skor >= 60:
-        return "yuksek"
-
-    if skor >= 40:
-        return "orta"
-
-    return "dusuk"
-
-
-# =============================================================================
-# BÖLGELERİ ANALİZ ET
-# =============================================================================
-
-def bolgeleri_analiz_et(bolgeler, toplam_kaynak):
-    """
-    Tüm afet bölgelerini analiz eder.
-
-    Formül:
-
-    Skor =
-    Afet Şiddeti * 0.50
-    +
-    Normalize Nüfus * 0.20
-    +
-    Normalize İhtiyaç * 0.30
-    """
-
-    if not bolgeler:
-
-        raise ValueError(
-            "En az bir afet bölgesi eklemelisiniz."
-        )
-
-    # -------------------------------------------------------------------------
-    # Maksimum değerler
-    # -------------------------------------------------------------------------
-
-    maksimum_nufus = max(
-        bolge["nufus"]
-        for bolge in bolgeler
-    )
-
-    maksimum_ihtiyac = max(
-        bolge["ihtiyac"]
-        for bolge in bolgeler
-    )
-
-    # -------------------------------------------------------------------------
-    # Skorları hesapla
-    # -------------------------------------------------------------------------
-
-    for bolge in bolgeler:
-
-        nufus_normalize = normalize_et(
-            bolge["nufus"],
-            maksimum_nufus
-        )
-
-        ihtiyac_normalize = normalize_et(
-            bolge["ihtiyac"],
-            maksimum_ihtiyac
-        )
-
-        afet_puani = (
-            bolge["afet_siddeti"]
-        )
-
-        skor = (
-            (afet_puani * AFET_AGIRLIK)
-            +
-            (nufus_normalize * NUFUS_AGIRLIK)
-            +
-            (ihtiyac_normalize * IHTIYAC_AGIRLIK)
-        )
-
-        bolge["nufus_normalize"] = round(
-            nufus_normalize,
+        item["percentage"] = round(share * 100, 2)
+        item["allocated_resource"] = round(
+            total_resource * share,
             2
         )
 
-        bolge["ihtiyac_normalize"] = round(
-            ihtiyac_normalize,
-            2
-        )
+        if item["priority"] >= 75:
+            item["status"] = "Kritik"
+        elif item["priority"] >= 50:
+            item["status"] = "Acil"
+        elif item["priority"] >= 25:
+            item["status"] = "Orta"
+        else:
+            item["status"] = "Düşük"
 
-        bolge["skor"] = round(
-            skor,
-            2
-        )
-
-        bolge["seviye"] = oncelik_seviyesi(
-            skor
-        )
-
-        bolge["sinif"] = oncelik_sinifi(
-            skor
-        )
-
-    # -------------------------------------------------------------------------
-    # Skora göre sırala
-    # -------------------------------------------------------------------------
-
-    bolgeler.sort(
-        key=lambda x: x["skor"],
+    results.sort(
+        key=lambda x: x["priority"],
         reverse=True
     )
 
-    # -------------------------------------------------------------------------
-    # Sıralama numarası
-    # -------------------------------------------------------------------------
-
-    for index, bolge in enumerate(
-        bolgeler,
-        start=1
-    ):
-
-        bolge["sira"] = index
-
-    # -------------------------------------------------------------------------
-    # Toplam skor
-    # -------------------------------------------------------------------------
-
-    toplam_skor = sum(
-        bolge["skor"]
-        for bolge in bolgeler
-    )
-
-    # -------------------------------------------------------------------------
-    # Kaynak dağıtımı
-    # -------------------------------------------------------------------------
-
-    for bolge in bolgeler:
-
-        if toplam_skor > 0:
-
-            kaynak_orani = (
-                bolge["skor"]
-                / toplam_skor
-            )
-
-        else:
-
-            kaynak_orani = (
-                1 / len(bolgeler)
-            )
-
-        bolge["kaynak_orani"] = round(
-            kaynak_orani * 100,
-            2
-        )
-
-        bolge["tahmini_kaynak"] = round(
-            toplam_kaynak * kaynak_orani,
-            2
-        )
-
-    return bolgeler
+    return results
 
 
-# =============================================================================
-# ANA SAYFA
-# =============================================================================
-
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
+    return render_template("index.html")
 
-    bolgeler = []
-    toplam_kaynak = 0
-    hata = None
-    analiz_yapildi = False
 
-    if request.method == "POST":
+@app.route("/analyze", methods=["POST"])
+def analyze():
 
-        try:
+    data = request.get_json()
 
-            # -----------------------------------------------------------------
-            # Toplam kaynak
-            # -----------------------------------------------------------------
+    if not data:
+        return jsonify({
+            "error": "Veri alınamadı."
+        }), 400
 
-            toplam_kaynak = pozitif_sayi(
-                request.form.get(
-                    "toplam_kaynak",
-                    0
-                ),
-                "Toplam kaynak"
-            )
-
-            if toplam_kaynak <= 0:
-
-                raise ValueError(
-                    "Toplam kaynak 0'dan büyük olmalıdır."
-                )
-
-            # -----------------------------------------------------------------
-            # JSON olarak gönderilen bölgeleri al
-            # -----------------------------------------------------------------
-
-            bolge_json = request.form.get(
-                "bolgeler_json",
-                ""
-            )
-
-            if not bolge_json:
-
-                raise ValueError(
-                    "Afet bölgesi eklenmedi."
-                )
-
-            try:
-
-                girilen_bolgeler = json.loads(
-                    bolge_json
-                )
-
-            except json.JSONDecodeError:
-
-                raise ValueError(
-                    "Bölge verileri okunamadı."
-                )
-
-            if not isinstance(
-                girilen_bolgeler,
-                list
-            ):
-
-                raise ValueError(
-                    "Bölge verileri geçersiz."
-                )
-
-            # -----------------------------------------------------------------
-            # Bölge verilerini temizle
-            # -----------------------------------------------------------------
-
-            for index, veri in enumerate(
-                girilen_bolgeler,
-                start=1
-            ):
-
-                ad = str(
-                    veri.get(
-                        "ad",
-                        ""
-                    )
-                ).strip()
-
-                if not ad:
-
-                    raise ValueError(
-                        f"{index}. bölgenin adı boş."
-                    )
-
-                afet_siddeti = pozitif_sayi(
-                    veri.get(
-                        "afet_siddeti",
-                        0
-                    ),
-                    f"{ad} - Afet Şiddeti"
-                )
-
-                nufus = pozitif_sayi(
-                    veri.get(
-                        "nufus",
-                        0
-                    ),
-                    f"{ad} - Nüfus"
-                )
-
-                ihtiyac = pozitif_sayi(
-                    veri.get(
-                        "ihtiyac",
-                        0
-                    ),
-                    f"{ad} - İhtiyaç"
-                )
-
-                if afet_siddeti > 100:
-
-                    raise ValueError(
-                        f"{ad} için afet şiddeti "
-                        "100'den büyük olamaz."
-                    )
-
-                if nufus <= 0:
-
-                    raise ValueError(
-                        f"{ad} için nüfus 0'dan büyük olmalıdır."
-                    )
-
-                if ihtiyac <= 0:
-
-                    raise ValueError(
-                        f"{ad} için ihtiyaç 0'dan büyük olmalıdır."
-                    )
-
-                bolgeler.append({
-
-                    "ad": ad,
-
-                    "afet_siddeti": round(
-                        afet_siddeti,
-                        2
-                    ),
-
-                    "nufus": round(
-                        nufus,
-                        2
-                    ),
-
-                    "ihtiyac": round(
-                        ihtiyac,
-                        2
-                    )
-
-                })
-
-            # -----------------------------------------------------------------
-            # Analiz
-            # -----------------------------------------------------------------
-
-            bolgeler = bolgeleri_analiz_et(
-                bolgeler,
-                toplam_kaynak
-            )
-
-            analiz_yapildi = True
-
-        except ValueError as e:
-
-            hata = str(e)
-
-        except Exception as e:
-
-            hata = (
-                "Beklenmeyen bir hata oluştu: "
-                + str(e)
-            )
-
-    return render_template(
-        "index.html",
-        bolgeler=bolgeler,
-        toplam_kaynak=toplam_kaynak,
-        hata=hata,
-        analiz_yapildi=analiz_yapildi
+    regions = data.get("regions", [])
+    total_resource = float(
+        data.get("total_resource", 0)
     )
 
+    if total_resource <= 0:
+        return jsonify({
+            "error": "Toplam kullanılabilir kaynak 0'dan büyük olmalıdır."
+        }), 400
 
-# =============================================================================
-# JSON API
-# =============================================================================
+    if not regions:
+        return jsonify({
+            "error": "En az bir afet bölgesi ekleyin."
+        }), 400
 
-@app.route("/api/health")
-def health():
+    results = analyze_regions(
+        regions,
+        total_resource
+    )
+
+    critical_count = sum(
+        1 for item in results
+        if item["status"] == "Kritik"
+    )
+
+    average_priority = (
+        sum(item["priority"] for item in results)
+        / len(results)
+    )
+
+    ai_message = generate_recommendation(results)
 
     return jsonify({
-
-        "status": "ok",
-
-        "project": (
-            "Afet-X Akıllı Kaynak Dağıtımı"
+        "results": results,
+        "critical_count": critical_count,
+        "average_priority": round(
+            average_priority,
+            2
         ),
-
-        "version": "2.0"
-
+        "ai_recommendation": ai_message
     })
 
 
-@app.route("/api/hesapla", methods=["POST"])
-def api_hesapla():
+def generate_recommendation(results):
+    """Analiz sonucuna göre açıklayıcı sistem önerisi üretir."""
 
-    try:
+    if not results:
+        return "Analiz yapılacak bölge bulunamadı."
 
-        veri = request.get_json()
+    top = results[0]
 
-        if not veri:
-
-            return jsonify({
-                "basarili": False,
-                "hata": "JSON verisi gönderilmedi."
-            }), 400
-
-        toplam_kaynak = pozitif_sayi(
-            veri.get(
-                "toplam_kaynak",
-                0
-            ),
-            "Toplam kaynak"
+    if top["status"] == "Kritik":
+        return (
+            f"{top['name']} bölgesi en yüksek önceliğe sahip. "
+            f"Öncelik puanı {top['priority']}/100. "
+            f"Mevcut kaynakların yaklaşık %{top['percentage']} "
+            f"oranının bu bölgeye yönlendirilmesi öneriliyor."
         )
 
-        bolgeler = veri.get(
-            "bolgeler",
-            []
+    if top["status"] == "Acil":
+        return (
+            f"{top['name']} bölgesi acil müdahale gerektiriyor. "
+            f"Öncelik puanı {top['priority']}/100. "
+            f"Kaynak dağıtımında bu bölge öncelikli değerlendirilmeli."
         )
 
-        temiz_bolgeler = []
-
-        for bolge in bolgeler:
-
-            ad = str(
-                bolge.get(
-                    "ad",
-                    ""
-                )
-            ).strip()
-
-            afet_siddeti = pozitif_sayi(
-                bolge.get(
-                    "afet_siddeti",
-                    0
-                ),
-                "Afet Şiddeti"
-            )
-
-            nufus = pozitif_sayi(
-                bolge.get(
-                    "nufus",
-                    0
-                ),
-                "Nüfus"
-            )
-
-            ihtiyac = pozitif_sayi(
-                bolge.get(
-                    "ihtiyac",
-                    0
-                ),
-                "İhtiyaç"
-            )
-
-            if not ad:
-                raise ValueError(
-                    "Bölge adı boş olamaz."
-                )
-
-            if afet_siddeti > 100:
-                raise ValueError(
-                    "Afet şiddeti 100'den büyük olamaz."
-                )
-
-            temiz_bolgeler.append({
-
-                "ad": ad,
-
-                "afet_siddeti": afet_siddeti,
-
-                "nufus": nufus,
-
-                "ihtiyac": ihtiyac
-
-            })
-
-        sonuc = bolgeleri_analiz_et(
-            temiz_bolgeler,
-            toplam_kaynak
-        )
-
-        return jsonify({
-
-            "basarili": True,
-
-            "toplam_kaynak": toplam_kaynak,
-
-            "bolge_sayisi": len(sonuc),
-
-            "sonuclar": sonuc
-
-        })
-
-    except ValueError as e:
-
-        return jsonify({
-
-            "basarili": False,
-
-            "hata": str(e)
-
-        }), 400
-
-    except Exception as e:
-
-        return jsonify({
-
-            "basarili": False,
-
-            "hata": (
-                "Sunucu hatası: "
-                + str(e)
-            )
-
-        }), 500
+    return (
+        f"{top['name']} bölgesi mevcut veriler içinde "
+        f"en yüksek önceliğe sahip. "
+        f"Öncelik puanı {top['priority']}/100."
+    )
 
 
-# =============================================================================
-# UYGULAMA
-# =============================================================================
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "ok",
+        "project": "Afet-X Akıllı Kaynak Dağıtımı"
+    })
+
 
 if __name__ == "__main__":
-
     port = int(
-        os.environ.get(
-            "PORT",
-            5000
-        )
+        os.environ.get("PORT", 5000)
     )
 
     app.run(
         host="0.0.0.0",
         port=port,
-        debug=True
+        debug=False
     )
