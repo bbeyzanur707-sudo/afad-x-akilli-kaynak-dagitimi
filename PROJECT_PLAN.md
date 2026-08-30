@@ -1,231 +1,245 @@
-# 🚨 Afet-X Proje Planı
+# Afet-X Akıllı Kaynak Dağıtımı
 
-## 1. Proje Vizyonu
+## 1. Projenin Amacı
 
-Afet-X'i afet sırasında kaynak, ambulans, hastane ve
-ulaşım kararlarını destekleyen bütünleşik bir sistem
-haline getirmek.
+Afet-X, afet bölgelerindeki ihtiyaçları analiz ederek kaynakların,
+ambulansların ve hastanelerin daha hızlı ve verimli şekilde
+yönetilmesini amaçlayan akıllı karar destek sistemidir.
+
+Sistem;
+
+- Afet bölgelerinin önceliklerini belirler.
+- Kaynakların hangi bölgeye gönderileceğini hesaplar.
+- Ambulans için en hızlı rotayı belirlemeye yardımcı olur.
+- Hastanelerdeki yoğunluk ve mevcut kapasiteyi gösterir.
+- Hastanelerdeki personel yorgunluğunu takip eder.
+- Yol durumuna göre alternatif güzergah önerir.
+- Afet yöneticilerine karar desteği sağlar.
 
 ---
 
-# 2. Temel Sistem
+## 2. Temel Sistem
 
-Sistem dört ana bölümden oluşur:
+Sistem beş ana bölümden oluşur:
 
 1. Afet Analizi
 2. Akıllı Kaynak Dağıtımı
 3. Ambulans ve Rota Yönetimi
 4. Hastane Durum Analizi
+5. Harita ve Karar Destek Sistemi
 
 ---
 
-# 3. Afet Analizi
+## 3. Afet Analizi
 
-Her afet bölgesi için:
+Her afet bölgesi için;
 
 - Afet şiddeti
 - Nüfus
-- İhtiyaç
+- İhtiyaç miktarı
+- Bölgenin öncelik seviyesi
 
-bilgileri değerlendirilir.
+hesaplanır.
 
-Bölgeler öncelik puanına göre sıralanır.
+Öncelik hesabında;
+
+- Afet şiddeti: %50
+- Nüfus: %20
+- İhtiyaç: %30
+
+ağırlıkları kullanılır.
+
+Sistem bölgeleri karşılaştırarak en yüksek önceliğe sahip
+bölgeleri belirler.
 
 ---
 
-# 4. Akıllı Kaynak Dağıtımı
+## 4. Akıllı Kaynak Dağıtımı
 
-Toplam kullanılabilir kaynak,
-bölgelerin öncelik puanlarına göre
-oransal olarak dağıtılır.
+Toplam kullanılabilir kaynak sisteme girilir.
 
-Amaç sınırlı kaynağın daha kritik
-bölgelere yönlendirilmesine yardımcı olmaktır.
+Sistem hesaplanan öncelik puanlarına göre kaynakları
+bölgelere dağıtır.
+
+Amaç;
+
+- Kaynak israfını azaltmak
+- Kritik bölgelere daha hızlı ulaşmak
+- Kaynakların dengeli dağıtılmasını sağlamak
+- Karar verme süresini azaltmak
 
 ---
 
-# 5. Akıllı Harita
+## 5. Ambulans ve Rota Yönetimi
 
-Harita üzerinde:
+Sistem ambulansların hastaya ulaşması için uygun rotayı
+belirlemeye yardımcı olur.
+
+Rota değerlendirilirken;
+
+- Mesafe
+- Tahmini ulaşım süresi
+- Yol durumu
+- Trafik yoğunluğu
+- Yolun kullanılabilirliği
+
+gibi bilgiler dikkate alınır.
+
+Sistem mümkün olduğunda en hızlı ve güvenli rotayı önerir.
+
+---
+
+## 6. Hastane Durum Analizi
+
+Sistemde hastanelerin mevcut durumu takip edilir.
+
+Her hastane için;
+
+- Hasta sayısı
+- Yatak kapasitesi
+- Boş yatak sayısı
+- Personel sayısı
+- Personel yorgunluk seviyesi
+- Acil servis yoğunluğu
+
+gibi bilgiler gösterilebilir.
+
+Böylece ambulansın hangi hastaneye yönlendirilmesinin
+daha uygun olabileceği konusunda karar desteği sağlanır.
+
+---
+
+## 7. Personel Yorgunluk Analizi
+
+Afet sırasında sağlık çalışanlarının çalışma yoğunluğu
+takip edilir.
+
+Yorgunluk seviyesi;
+
+- Düşük
+- Orta
+- Yüksek
+- Kritik
+
+şeklinde sınıflandırılabilir.
+
+Yorgunluğu yüksek hastanelerde sistem yöneticiyi uyarır.
+
+Bu özellik, personel dağılımının daha dengeli yapılmasına
+yardımcı olur.
+
+---
+
+## 8. Harita Sistemi
+
+Sistem afet bölgelerini, hastaneleri ve ambulansları
+harita üzerinde gösterecek şekilde geliştirilebilir.
+
+Haritada;
 
 - Afet bölgeleri
 - Hastaneler
 - Ambulanslar
-- Ambulans rotaları
+- Ana yollar
+- Alternatif yollar
+- Riskli yollar
 
-gösterilir.
+gösterilebilir.
 
----
-
-# 6. Ambulans Rota Sistemi
-
-Ambulansın bulunduğu konum ile
-hastane arasındaki alternatif rotalar
-hesaplanır.
-
-Her rota için:
-
-- Mesafe
-- Tahmini süre
-
-gösterilir.
-
-Sistem en hızlı rotayı öne çıkarır.
+Kullanıcı bir bölge seçtiğinde sistem o bölgeye ilişkin
+önemli bilgileri gösterebilir.
 
 ---
 
-# 7. Hastane Karar Sistemi
+## 9. Akıllı Yol Seçimi
 
-Hastaneler aşağıdaki faktörlere göre
-karşılaştırılır:
-
-- Ulaşım süresi
-- Hastane doluluk oranı
-- Personel yükü
-- Kullanılabilir yatak
-
-Amaç yalnızca en yakın hastaneyi değil,
-duruma göre daha uygun hastaneyi
-belirlemeye yardımcı olmaktır.
-
----
-
-# 8. Personel Yükü
-
-Prototipte hastane personel yükü
-0-100 arasında gösterilmektedir.
+Birden fazla yol bulunduğunda sistem yolları
+karşılaştırabilir.
 
 Örneğin:
 
-0-30 = Düşük yük
+Yol A:
+- 12 km
+- Tahmini süre: 18 dakika
+- Trafik: Orta
 
-31-60 = Orta yük
+Yol B:
+- 15 km
+- Tahmini süre: 12 dakika
+- Trafik: Düşük
 
-61-80 = Yüksek yük
-
-81-100 = Kritik yük
-
-Gerçek sistemde bu değerlerin
-hastane bilgi sistemlerinden gelen
-verilerle oluşturulması hedeflenmektedir.
-
----
-
-# 9. Gelecek Aşamalar
-
-## Aşama 1
-
-Temel afet kaynak dağıtımı.
-
-## Aşama 2
-
-Etkileşimli harita.
-
-## Aşama 3
-
-Ambulans ve hastane sistemi.
-
-## Aşama 4
-
-Alternatif rota hesaplama.
-
-## Aşama 5
-
-Hastane kapasite analizi.
-
-## Aşama 6
-
-Gerçek zamanlı trafik.
-
-## Aşama 7
-
-Yol kapanmaları.
-
-## Aşama 8
-
-Gerçek zamanlı hastane kapasitesi.
-
-## Aşama 9
-
-Gerçek ambulans konumları.
-
-## Aşama 10
-
-Yapay zekâ destekli tahmin sistemi.
+Bu durumda sistem sadece mesafeye bakmak yerine
+tahmini ulaşım süresini ve yol durumunu da değerlendirerek
+Yol B'yi önerebilir.
 
 ---
 
-# 10. Nihai Sistem
+## 10. Ambulans İçin Hastane Seçimi
 
-Hedeflenen sistem akışı:
+Ambulans hastaya ulaştıktan sonra sistem uygun hastaneyi
+belirlemeye yardımcı olabilir.
 
-AFET
+Hastane seçilirken;
 
-↓
+- Hastaneye ulaşım süresi
+- Boş yatak sayısı
+- Acil servis yoğunluğu
+- Personel yorgunluğu
+- Hastanenin mevcut kapasitesi
 
-VERİ TOPLAMA
+değerlendirilir.
 
-↓
-
-AFET ANALİZİ
-
-↓
-
-KRİTİK BÖLGE BELİRLEME
-
-↓
-
-KAYNAK DAĞITIMI
-
-↓
-
-AMBULANS KONUMLARI
-
-↓
-
-HASTANE ANALİZİ
-
-↓
-
-ROTA KARŞILAŞTIRMA
-
-↓
-
-EN UYGUN HASTANE
-
-↓
-
-EN UYGUN ROTA
-
-↓
-
-KARAR DESTEĞİ
+Böylece sadece en yakın hastane değil,
+duruma göre en uygun hastane önerilebilir.
 
 ---
 
-# 11. Projenin Yenilikçi Yönü
+## 11. Karar Destek Sistemi
 
-Afet-X yalnızca kaynak dağıtımı yapmayı değil,
-afet yönetiminde farklı kararları tek bir
-platform üzerinde birleştirmeyi hedeflemektedir.
+Sistem yöneticilere otomatik öneriler sunabilir.
 
-Sistem;
+Örneğin:
 
-"Kaynak nereye gönderilmeli?"
+> "Bölge 2 yüksek önceliklidir."
 
-"Ambulans hangi hastaneye gitmeli?"
+> "Ambulans için alternatif rota daha hızlıdır."
 
-"Ambulans hangi rotayı kullanmalı?"
+> "Hastane A'nın yoğunluğu kritik seviyededir."
 
-"Hangi hastanenin kapasitesi daha uygun?"
+> "Hastane B'de daha fazla boş yatak bulunmaktadır."
 
-sorularına veri destekli cevap üretmeyi amaçlamaktadır.
+> "Hastane C'de personel yorgunluğu yüksektir."
+
+Bu uyarılar afet sırasında karar verme sürecini
+hızlandırmayı amaçlar.
 
 ---
 
-# 12. Uzun Vadeli Hedef
+## 12. Gelecekte Eklenebilecek Özellikler
 
-Afet-X'in gerçek zamanlı verilerle çalışan,
-afet yönetimi ekiplerine karar desteği sağlayan
-kapsamlı bir afet lojistik platformuna
-dönüştürülmesi hedeflenmektedir.
+Projenin ilerleyen aşamalarında;
+
+- Gerçek zamanlı trafik verisi
+- Gerçek zamanlı harita
+- GPS destekli ambulans takibi
+- Hava durumu verileri
+- Yapay zeka tabanlı talep tahmini
+- Hastane yoğunluk tahmini
+- Otomatik rota güncelleme
+- Mobil uygulama
+- Gerçek zamanlı bildirim sistemi
+
+eklenebilir.
+
+---
+
+## 13. Projenin Yenilikçi Yönü
+
+Afet-X yalnızca kaynak dağıtımı yapan bir sistem değildir.
+
+Kaynak dağıtımı, ambulans rotası, hastane kapasitesi,
+personel yorgunluğu ve harita tabanlı karar desteğini
+tek bir sistem içerisinde birleştirmeyi amaçlamaktadır.
+
+Bu sayede afet sırasında daha hızlı, dengeli ve
+veriye dayalı karar alınmasına yardımcı olması hedeflenmektedir.
