@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Afet-X | Akıllı Afet Yönetimi</title>
 
@@ -16,37 +12,31 @@
     >
 
     <style>
-
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
             background: #f4f7fb;
             color: #1f2937;
         }
 
         header {
-            background: linear-gradient(
-                135deg,
-                #1769aa,
-                #2196f3
-            );
-
+            background: linear-gradient(135deg, #0f5fb7, #1683d8);
             color: white;
-            padding: 28px;
+            padding: 25px;
             text-align: center;
         }
 
         header h1 {
+            margin: 0 0 8px 0;
             font-size: 32px;
-            margin-bottom: 8px;
         }
 
         header p {
+            margin: 0;
             opacity: 0.9;
         }
 
@@ -56,218 +46,325 @@
             margin: 25px auto;
         }
 
-        .cards {
+        .grid {
             display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(200px, 1fr));
-
-            gap: 16px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         .card {
             background: white;
-            border-radius: 14px;
+            border-radius: 15px;
             padding: 20px;
-
-            box-shadow:
-                0 5px 20px rgba(0,0,0,0.08);
-        }
-
-        .card h3 {
-            font-size: 15px;
-            color: #6b7280;
-            margin-bottom: 10px;
-        }
-
-        .number {
-            font-size: 30px;
-            font-weight: bold;
-            color: #1769aa;
-        }
-
-        .section {
-            background: white;
-            padding: 22px;
-            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             margin-bottom: 20px;
-
-            box-shadow:
-                0 5px 20px rgba(0,0,0,0.08);
         }
 
-        .section h2 {
-            margin-bottom: 18px;
+        .card h2 {
+            margin-top: 0;
+            color: #145da0;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
         }
 
         button {
             border: none;
-            border-radius: 8px;
+            border-radius: 9px;
             padding: 12px 18px;
-
-            background: #1976d2;
-            color: white;
-
-            font-weight: bold;
             cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .primary {
+            background: #1674d1;
+            color: white;
+            width: 100%;
+        }
+
+        .secondary {
+            background: #e8f2fc;
+            color: #145da0;
         }
 
         button:hover {
             opacity: 0.9;
         }
 
-        #map {
-            height: 500px;
-            border-radius: 12px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-            text-align: left;
-        }
-
-        th {
-            background: #f3f4f6;
-        }
-
-        .critical {
-            color: #dc2626;
-            font-weight: bold;
-        }
-
-        .urgent {
-            color: #ea580c;
-            font-weight: bold;
-        }
-
-        .medium {
-            color: #ca8a04;
-            font-weight: bold;
-        }
-
-        .low {
-            color: #16a34a;
-            font-weight: bold;
-        }
-
-        .hospital-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(260px, 1fr));
-
-            gap: 15px;
-        }
-
-        .hospital {
+        .region {
             border: 1px solid #e5e7eb;
-            border-radius: 10px;
             padding: 15px;
-        }
-
-        .bar {
-            height: 10px;
-            background: #e5e7eb;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .bar-inner {
-            height: 100%;
-            background: #ef4444;
-        }
-
-        #routeResult {
-            margin-top: 15px;
-        }
-
-        .route-box {
-            padding: 15px;
-            background: #f3f8ff;
             border-radius: 10px;
             margin-top: 10px;
         }
 
-    </style>
+        .region-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
 
+        #map {
+            width: 100%;
+            height: 520px;
+            border-radius: 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 26px;
+            margin-top: 8px;
+            color: #145da0;
+        }
+
+        .result {
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8fafc;
+            margin-top: 10px;
+            border-left: 5px solid #1674d1;
+        }
+
+        .critical {
+            border-left-color: #dc2626;
+            background: #fff1f2;
+        }
+
+        .warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .good {
+            border-left-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .hospital-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 12px;
+        }
+
+        .progress {
+            width: 100%;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #1674d1;
+        }
+
+        .route {
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .route.best {
+            border: 2px solid #16a34a;
+            background: #f0fdf4;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .region-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <header>
-
     <h1>🚨 Afet-X</h1>
-
-    <p>
-        Yapay zekâ destekli afet kaynak,
-        ambulans ve hastane karar destek sistemi
-    </p>
-
+    <p>Akıllı Afet Kaynak, Ambulans ve Hastane Karar Destek Sistemi</p>
 </header>
-
 
 <div class="container">
 
+    <div class="stats">
 
-    <!-- İSTATİSTİKLER -->
+        <div class="stat">
+            Afet Bölgeleri
+            <strong id="regionCount">0</strong>
+        </div>
 
-    <div class="cards">
+        <div class="stat">
+            Hastaneler
+            <strong id="hospitalCount">0</strong>
+        </div>
+
+        <div class="stat">
+            Ambulanslar
+            <strong id="ambulanceCount">0</strong>
+        </div>
+
+        <div class="stat">
+            Kritik Bölgeler
+            <strong id="criticalCount">0</strong>
+        </div>
+
+    </div>
+
+    <div class="grid">
 
         <div class="card">
 
-            <h3>Afet Bölgeleri</h3>
+            <h2>📍 Afet Bölgeleri</h2>
 
-            <div
-                class="number"
-                id="regionCount">
-                0
+            <label>Toplam Kullanılabilir Kaynak</label>
+
+            <input
+                type="number"
+                id="totalResource"
+                value="100000"
+                min="0"
+            >
+
+            <div id="regions">
+
+                <div class="region">
+
+                    <label>Bölge Adı</label>
+
+                    <input
+                        class="region-name"
+                        type="text"
+                        placeholder="Örn. Hatay"
+                    >
+
+                    <div class="region-grid">
+
+                        <div>
+                            <label>Afet Şiddeti</label>
+
+                            <input
+                                class="region-severity"
+                                type="number"
+                                min="0"
+                                max="100"
+                                placeholder="0-100"
+                            >
+                        </div>
+
+                        <div>
+                            <label>Nüfus</label>
+
+                            <input
+                                class="region-population"
+                                type="number"
+                                min="0"
+                                placeholder="Örn. 1700000"
+                            >
+                        </div>
+
+                        <div>
+                            <label>İhtiyaç</label>
+
+                            <input
+                                class="region-need"
+                                type="number"
+                                min="0"
+                                placeholder="Örn. 8500"
+                            >
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
+            <button
+                class="secondary"
+                onclick="addRegion()"
+            >
+                + Yeni Afet Bölgesi Ekle
+            </button>
+
+            <button
+                class="primary"
+                onclick="analyzeRegions()"
+            >
+                ⚡ Tüm Bölgeleri Analiz Et
+            </button>
 
         </div>
 
 
         <div class="card">
 
-            <h3>Kritik Bölgeler</h3>
+            <h2>🧠 Karar Destek Özeti</h2>
 
-            <div
-                class="number"
-                id="criticalCount">
-                0
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <h3>Hastaneler</h3>
-
-            <div
-                class="number"
-                id="hospitalCount">
-                0
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <h3>Ambulanslar</h3>
-
-            <div
-                class="number"
-                id="ambulanceCount">
-                0
+            <div id="analysisResult">
+                Analiz yapılması bekleniyor.
             </div>
 
         </div>
@@ -275,570 +372,440 @@
     </div>
 
 
-    <!-- AFET ANALİZİ -->
+    <div class="card">
 
-    <div class="section">
-
-        <h2>📊 Afet Öncelik Analizi</h2>
-
-        <button onclick="analyzeRegions()">
-            Tüm Bölgeleri Analiz Et
-        </button>
-
-        <div id="analysisResult"></div>
-
-    </div>
-
-
-    <!-- HARİTA -->
-
-    <div class="section">
-
-        <h2>🗺️ Afet ve Ambulans Haritası</h2>
+        <h2>🗺️ Afet ve Acil Durum Haritası</h2>
 
         <div id="map"></div>
 
     </div>
 
 
-    <!-- HASTANELER -->
+    <div class="grid">
 
-    <div class="section">
+        <div class="card">
 
-        <h2>🏥 Hastane Durumu</h2>
+            <h2>🚑 Ambulans Yönetimi</h2>
 
-        <div
-            class="hospital-grid"
-            id="hospitalList">
+            <label>Ambulans Seç</label>
+
+            <select id="ambulanceSelect"></select>
+
+            <label>Hedef Hastane</label>
+
+            <select id="hospitalSelect"></select>
+
+            <button
+                class="primary"
+                onclick="calculateRoute()"
+            >
+                🚑 En Hızlı Rotayı Hesapla
+            </button>
+
+            <div id="routeResult"></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>🏥 Hastane Durumu</h2>
+
+            <div id="hospitalResults">
+                Hastane bilgileri yükleniyor...
+            </div>
+
         </div>
 
     </div>
 
 
-    <!-- AMBULANS -->
+    <div class="card">
 
-    <div class="section">
+        <h2>🛣️ Alternatif Rota Karşılaştırması</h2>
 
-        <h2>🚑 Ambulans Hastane Önerisi</h2>
-
-        <p style="margin-bottom:15px;">
-            Haritadaki veya aşağıdaki ambulanslardan
-            birini seçerek en uygun hastaneyi hesaplayabilirsiniz.
-        </p>
-
-        <select
-            id="ambulanceSelect"
-            style="
-                padding:12px;
-                width:100%;
-                max-width:400px;
-                margin-bottom:10px;
-            ">
-        </select>
-
-        <br>
-
-        <button onclick="recommendHospital()">
-            🚑 En Uygun Hastaneyi Bul
-        </button>
-
-        <div id="hospitalRecommendation"></div>
+        <div id="routes">
+            Ambulans ve hastane seçildiğinde rotalar burada gösterilir.
+        </div>
 
     </div>
 
+
+    <div class="card">
+
+        <h2>🚨 Sistem Önerisi</h2>
+
+        <div id="recommendation">
+            Sistem henüz öneri üretmedi.
+        </div>
+
+    </div>
 
 </div>
 
 
-<script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-</script>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
-const regions =
-    {{ regions | tojson }};
+let map;
 
-const hospitals =
-    {{ hospitals | tojson }};
+let hospitals = [];
 
-const ambulances =
-    {{ ambulances | tojson }};
+let ambulances = [];
 
+let markers = [];
 
-// =====================================================
-// SAYILAR
-// =====================================================
-
-document.getElementById(
-    "regionCount"
-).textContent = regions.length;
-
-document.getElementById(
-    "hospitalCount"
-).textContent = hospitals.length;
-
-document.getElementById(
-    "ambulanceCount"
-).textContent = ambulances.length;
+let routeLines = [];
 
 
-// =====================================================
-// HARİTA
-// =====================================================
+function initializeMap() {
 
-const map = L.map("map").setView(
-    [37.2, 36.8],
-    7
-);
+    map = L.map("map").setView(
+        [36.2023, 36.1600],
+        12
+    );
 
-
-L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        attribution:
-            "&copy; OpenStreetMap katkıcıları"
-    }
-).addTo(map);
-
-
-// =====================================================
-// AFET BÖLGELERİ
-// =====================================================
-
-regions.forEach(region => {
-
-    const marker = L.circleMarker(
-        [region.lat, region.lon],
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-            radius: 10,
-            color: "red",
-            fillColor: "red",
-            fillOpacity: 0.6
+            attribution: "© OpenStreetMap contributors"
         }
     ).addTo(map);
-
-    marker.bindPopup(`
-        <b>🔴 ${region.name}</b><br>
-        Afet şiddeti: ${region.severity}<br>
-        Nüfus: ${region.population.toLocaleString()}<br>
-        İhtiyaç: ${region.need}
-    `);
-
-});
+}
 
 
-// =====================================================
-// HASTANELER
-// =====================================================
+async function loadData() {
 
-hospitals.forEach(hospital => {
+    try {
 
-    const marker = L.marker([
-        hospital.lat,
-        hospital.lon
-    ]).addTo(map);
+        const response = await fetch("/api/dashboard");
 
-    marker.bindPopup(`
-        <b>🏥 ${hospital.name}</b><br>
-        Kapasite: ${hospital.capacity}<br>
-        Kullanılabilir yatak:
-        ${hospital.beds_available}<br>
-        Personel yükü:
-        %${hospital.staff_load}
-    `);
-
-});
-
-
-// =====================================================
-// AMBULANSLAR
-// =====================================================
-
-ambulances.forEach(ambulance => {
-
-    const marker = L.marker([
-        ambulance.lat,
-        ambulance.lon
-    ]).addTo(map);
-
-    marker.bindPopup(`
-        <b>🚑 ${ambulance.name}</b><br>
-        Durum: ${ambulance.status}
-    `);
-
-});
-
-
-// =====================================================
-// HASTANE KARTLARI
-// =====================================================
-
-const hospitalList =
-    document.getElementById(
-        "hospitalList"
-    );
-
-hospitals.forEach(hospital => {
-
-    hospitalList.innerHTML += `
-
-        <div class="hospital">
-
-            <h3>
-                🏥 ${hospital.name}
-            </h3>
-
-            <p>
-                ${hospital.city}
-            </p>
-
-            <br>
-
-            <p>
-                🛏️ Kullanılabilir yatak:
-                <b>
-                    ${hospital.beds_available}
-                </b>
-                /
-                ${hospital.capacity}
-            </p>
-
-            <p>
-                😓 Personel yükü:
-                <b>
-                    %${hospital.staff_load}
-                </b>
-            </p>
-
-            <div class="bar">
-
-                <div
-                    class="bar-inner"
-                    style="
-                        width:${hospital.staff_load}%;
-                    ">
-                </div>
-
-            </div>
-
-        </div>
-    `;
-});
-
-
-// =====================================================
-// AMBULANS SEÇİMİ
-// =====================================================
-
-const ambulanceSelect =
-    document.getElementById(
-        "ambulanceSelect"
-    );
-
-ambulances.forEach(ambulance => {
-
-    ambulanceSelect.innerHTML += `
-
-        <option value="${ambulance.id}">
-            ${ambulance.name}
-        </option>
-
-    `;
-
-});
-
-
-// =====================================================
-// AFET ANALİZİ
-// =====================================================
-
-async function analyzeRegions() {
-
-    const response =
-        await fetch(
-            "/analyze",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body: JSON.stringify({
-                    regions: regions
-                })
-            }
-        );
-
-    const data =
-        await response.json();
-
-    document.getElementById(
-        "criticalCount"
-    ).textContent =
-        data.critical_count;
-
-
-    let html = `
-
-        <table>
-
-            <tr>
-                <th>Bölge</th>
-                <th>Şiddet</th>
-                <th>İhtiyaç</th>
-                <th>Öncelik</th>
-                <th>Durum</th>
-            </tr>
-
-    `;
-
-
-    data.results.forEach(region => {
-
-        let className = "low";
-
-        if (region.priority >= 75) {
-            className = "critical";
-        }
-        else if (region.priority >= 50) {
-            className = "urgent";
-        }
-        else if (region.priority >= 25) {
-            className = "medium";
+        if (!response.ok) {
+            throw new Error("Veriler alınamadı.");
         }
 
+        const data = await response.json();
 
-        html += `
+        hospitals = data.hospitals || [];
 
-            <tr>
+        ambulances = data.ambulances || [];
 
-                <td>
-                    ${region.name}
-                </td>
+        document.getElementById("hospitalCount").textContent =
+            hospitals.length;
 
-                <td>
-                    ${region.severity}
-                </td>
+        document.getElementById("ambulanceCount").textContent =
+            ambulances.length;
 
-                <td>
-                    ${region.need}
-                </td>
+        fillSelects();
 
-                <td>
-                    <b>
-                        ${region.priority}
-                    </b>
-                </td>
+        showHospitals();
 
-                <td class="${className}">
-                    ${region.status}
-                </td>
+        showMapData();
 
-            </tr>
+    } catch (error) {
 
-        `;
+        console.error(error);
+
+        document.getElementById("hospitalResults").innerHTML =
+            "<div class='result critical'>Veriler yüklenemedi.</div>";
+
+    }
+
+}
+
+
+function fillSelects() {
+
+    const ambulanceSelect =
+        document.getElementById("ambulanceSelect");
+
+    const hospitalSelect =
+        document.getElementById("hospitalSelect");
+
+    ambulanceSelect.innerHTML = "";
+
+    hospitalSelect.innerHTML = "";
+
+
+    ambulances.forEach(ambulance => {
+
+        const option = document.createElement("option");
+
+        option.value = ambulance.id;
+
+        option.textContent =
+            ambulance.name +
+            " - " +
+            ambulance.status;
+
+        ambulanceSelect.appendChild(option);
 
     });
 
 
-    html += "</table>";
+    hospitals.forEach(hospital => {
 
-    document.getElementById(
-        "analysisResult"
-    ).innerHTML = html;
+        const option = document.createElement("option");
+
+        option.value = hospital.id;
+
+        option.textContent = hospital.name;
+
+        hospitalSelect.appendChild(option);
+
+    });
 
 }
 
 
-// =====================================================
-// HASTANE ÖNERİSİ
-// =====================================================
+function showHospitals() {
 
-async function recommendHospital() {
+    const container =
+        document.getElementById("hospitalResults");
 
-    const selectedId =
-        ambulanceSelect.value;
+    container.innerHTML = "";
 
 
-    const ambulance =
-        ambulances.find(
-            a => a.id === selectedId
-        );
+    hospitals.forEach(hospital => {
+
+        let load = Number(hospital.staff_load || 0);
+
+        let beds = Number(hospital.beds_available || 0);
+
+        let capacity = Number(hospital.capacity || 0);
 
 
-    const response =
-        await fetch(
-            "/recommend-hospital",
-            {
-                method: "POST",
+        let status = "Uygun";
 
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
+        let css = "good";
 
-                body: JSON.stringify({
-                    lat: ambulance.lat,
-                    lon: ambulance.lon
-                })
-            }
-        );
+        let badge = "badge-green";
 
 
-    const data =
-        await response.json();
+        if (load >= 80 || beds <= 20) {
+
+            status = "Kritik";
+
+            css = "critical";
+
+            badge = "badge-red";
+
+        } else if (load >= 60 || beds <= 50) {
+
+            status = "Yoğun";
+
+            css = "warning";
+
+            badge = "badge-yellow";
+
+        }
 
 
-    if (data.error) {
+        container.innerHTML += `
 
-        document.getElementById(
-            "hospitalRecommendation"
-        ).innerHTML = `
-            <div class="route-box">
-                ❌ ${data.error}
+            <div class="hospital-card">
+
+                <h3>${hospital.name}</h3>
+
+                <span class="badge ${badge}">
+                    ${status}
+                </span>
+
+                <p>
+                    👩‍⚕️ Personel yükü:
+                    <strong>${load}%</strong>
+                </p>
+
+                <div class="progress">
+                    <div
+                        class="progress-bar"
+                        style="width:${load}%"
+                    ></div>
+                </div>
+
+                <p>
+                    🛏️ Kullanılabilir yatak:
+                    <strong>${beds}</strong>
+                </p>
+
+                <p>
+                    🏥 Doluluk:
+                    <strong>${capacity}%</strong>
+                </p>
+
             </div>
         `;
+    });
 
-        return;
-    }
-
-
-    const hospital =
-        data.recommended;
+}
 
 
-    let html = `
+function showMapData() {
 
-        <div class="route-box">
+    markers.forEach(marker => map.removeLayer(marker));
 
-            <h3>
-                🏥 Önerilen Hastane
-            </h3>
+    markers = [];
 
-            <br>
 
-            <b>
-                ${hospital.name}
-            </b>
+    hospitals.forEach(hospital => {
 
-            <p>
-                📍 Mesafe:
-                ${hospital.distance_km} km
-            </p>
+        const marker = L.marker([
+            hospital.lat,
+            hospital.lon
+        ]).addTo(map);
 
-            <p>
-                🛏️ Kullanılabilir yatak:
-                ${hospital.beds_available}
-            </p>
+        marker.bindPopup(`
+            <strong>🏥 ${hospital.name}</strong><br>
+            Personel yükü: ${hospital.staff_load}%<br>
+            Kullanılabilir yatak: ${hospital.beds_available}<br>
+            Doluluk: ${hospital.capacity}%
+        `);
 
-            <p>
-                😓 Personel yükü:
-                %${hospital.staff_load}
-            </p>
+        markers.push(marker);
 
-            <p>
-                ⭐ Uygunluk puanı:
-                ${hospital.score}
-            </p>
+    });
+
+
+    ambulances.forEach(ambulance => {
+
+        const marker = L.marker([
+            ambulance.lat,
+            ambulance.lon
+        ]).addTo(map);
+
+        marker.bindPopup(`
+            <strong>🚑 ${ambulance.name}</strong><br>
+            Durum: ${ambulance.status}
+        `);
+
+        markers.push(marker);
+
+    });
+
+}
+
+
+function addRegion() {
+
+    const regions =
+        document.getElementById("regions");
+
+    const div =
+        document.createElement("div");
+
+    div.className = "region";
+
+    div.innerHTML = `
+
+        <label>Bölge Adı</label>
+
+        <input
+            class="region-name"
+            type="text"
+            placeholder="Örn. Gaziantep"
+        >
+
+        <div class="region-grid">
+
+            <div>
+                <label>Afet Şiddeti</label>
+
+                <input
+                    class="region-severity"
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="0-100"
+                >
+            </div>
+
+            <div>
+                <label>Nüfus</label>
+
+                <input
+                    class="region-population"
+                    type="number"
+                    min="0"
+                >
+            </div>
+
+            <div>
+                <label>İhtiyaç</label>
+
+                <input
+                    class="region-need"
+                    type="number"
+                    min="0"
+                >
+            </div>
 
         </div>
 
     `;
 
-
-    if (
-        data.routes &&
-        data.routes.length > 0
-    ) {
-
-        const route =
-            data.routes[0];
-
-
-        html += `
-
-            <div class="route-box">
-
-                <h3>
-                    🛣️ En Hızlı Rota
-                </h3>
-
-                <p>
-                    📏 Mesafe:
-                    ${route.distance_km} km
-                </p>
-
-                <p>
-                    ⏱️ Tahmini süre:
-                    ${route.duration_min} dakika
-                </p>
-
-            </div>
-
-        `;
-
-    }
-
-
-    if (
-        data.alternatives &&
-        data.alternatives.length > 0
-    ) {
-
-        html += `
-
-            <div class="route-box">
-
-                <h3>
-                    🔄 Alternatif Hastaneler
-                </h3>
-
-        `;
-
-
-        data.alternatives
-            .slice(0, 3)
-            .forEach(item => {
-
-                html += `
-
-                    <p>
-                        🏥 ${item.name}
-                        —
-                        ${item.distance_km} km
-                        —
-                        puan: ${item.score}
-                    </p>
-
-                `;
-
-            });
-
-
-        html += "</div>";
-
-    }
-
-
-    document.getElementById(
-        "hospitalRecommendation"
-    ).innerHTML = html;
+    regions.appendChild(div);
 
 }
 
 
-// =====================================================
-// SAYFA AÇILINCA ANALİZ
-// =====================================================
+async function analyzeRegions() {
 
-analyzeRegions();
+    const names =
+        document.querySelectorAll(".region-name");
 
-</script>
+    const severities =
+        document.querySelectorAll(".region-severity");
 
-</body>
+    const populations =
+        document.querySelectorAll(".region-population");
 
-</html>
+    const needs =
+        document.querySelectorAll(".region-need");
+
+
+    const regions = [];
+
+
+    for (let i = 0; i < names.length; i++) {
+
+        if (!names[i].value) {
+            continue;
+        }
+
+        regions.push({
+
+            name: names[i].value,
+
+            severity:
+                Number(severities[i].value || 0),
+
+            population:
+                Number(populations[i].value || 0),
+
+            need:
+                Number(needs[i].value || 0)
+
+        });
+
+    }
+
+
+    const totalResource =
+        Number(
+            document.getElementById("totalResource").value
+        );
+
+
+    if (regions.length === 0) {
+
+        alert("En az bir afet bölgesi girin.");
+
+        return;
+
+    }
+
+
+    try {
+
+        const response = await fetch(
