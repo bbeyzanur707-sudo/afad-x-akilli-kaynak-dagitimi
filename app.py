@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, jsonify
+import math
 import requests
 
 app = Flask(__name__)
 
+
 # =========================================================
-# ÖRNEK HASTANELER
+# HASTANELER
 # =========================================================
 
 HOSPITALS = [
@@ -15,7 +17,6 @@ HOSPITALS = [
         "lon": 36.1600,
         "capacity": 78,
         "staff_load": 72,
-        "fatigue": 72,
         "beds_available": 110
     },
     {
@@ -25,7 +26,6 @@ HOSPITALS = [
         "lon": 36.1500,
         "capacity": 61,
         "staff_load": 55,
-        "fatigue": 55,
         "beds_available": 185
     },
     {
@@ -35,13 +35,13 @@ HOSPITALS = [
         "lon": 36.1400,
         "capacity": 42,
         "staff_load": 35,
-        "fatigue": 35,
         "beds_available": 260
     }
 ]
 
+
 # =========================================================
-# ÖRNEK AMBULANSLAR
+# AMBULANSLAR
 # =========================================================
 
 AMBULANCES = [
@@ -70,6 +70,20 @@ AMBULANCES = [
 
 
 # =========================================================
+# YARDIM MALZEMELERİ
+# =========================================================
+
+RESOURCE_TYPES = [
+    "Su",
+    "Gıda",
+    "İlaç",
+    "Tıbbi Malzeme",
+    "Çadır",
+    "Jeneratör"
+]
+
+
+# =========================================================
 # NORMALİZASYON
 # =========================================================
 
@@ -91,7 +105,7 @@ def normalize(values):
 
 
 # =========================================================
-# AFET BÖLGELERİ ANALİZİ
+# AFET ANALİZİ
 # =========================================================
 
 def analyze_regions(regions, total_resource):
@@ -106,8 +120,8 @@ def analyze_regions(regions, total_resource):
         for region in regions
     ]
 
-    normalized_population = normalize(populations)
-    normalized_need = normalize(needs)
+    population_scores = normalize(populations)
+    need_scores = normalize(needs)
 
     results = []
 
@@ -119,32 +133,17 @@ def analyze_regions(regions, total_resource):
 
         priority = (
             severity * 0.50
-            + normalized_population[index] * 0.20
-            + normalized_need[index] * 0.30
+            + population_scores[index] * 0.20
+            + need_scores[index] * 0.30
         )
 
         results.append({
-            "name": region.get(
-                "name",
-                "Bilinmeyen Bölge"
-            ),
-
-            "severity": round(
-                severity,
-                2
-            ),
-
+            "name": region.get("name", "Bilinmeyen Bölge"),
+            "severity": round(severity, 2),
             "population": populations[index],
-
             "need": needs[index],
-
-            "priority": round(
-                priority,
-                2
-            ),
-
+            "priority": round(priority, 2),
             "lat": region.get("lat"),
-
             "lon": region.get("lon")
         })
 
@@ -156,10 +155,7 @@ def analyze_regions(regions, total_resource):
     for item in results:
 
         if total_priority > 0:
-            share = (
-                item["priority"]
-                / total_priority
-            )
+            share = item["priority"] / total_priority
         else:
             share = 0
 
@@ -205,12 +201,151 @@ def generate_recommendation(results):
     top = results[0]
 
     return (
-        f"{top['name']} bölgesi en yüksek "
-        f"önceliğe sahip. Öncelik puanı "
-        f"{top['priority']}/100. "
-        f"Kaynakların yaklaşık "
-        f"%{top['percentage']} oranının "
+        f"{top['name']} bölgesi en yüksek önceliğe sahip. "
+        f"Öncelik puanı {top['priority']}/100. "
+        f"Kaynakların %{top['percentage']} oranının "
         f"bu bölgeye yönlendirilmesi öneriliyor."
+    )
+
+
+# =========================================================
+# MESAFE HESABI
+# =========================================================
+
+def haversine(lat1, lon1, lat2, lon2):
+
+    R = 6371
+
+    lat1 = math.radians(lat1)
+    lat2 = math.radians(lat2)
+
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+
+    a = (
+        math.sin(dlat / 2) ** 2
+        +
+        math.cos(lat1)
+        * math.cos(lat2)
+        * math.sin(dlon / 2) ** 2
+    )
+
+    c = 2 * math.atan2(
+        math.sqrt(a),
+        math.sqrt(1 - a)
+    )
+
+    return R * c
+
+
+# =========================================================
+# OSRM ROTA
+# =========================================================
+
+def get_route(
+    start_lat,
+    start_lon,
+    end_lat,
+    end_lon
+):
+
+    url = (
+        "https://router.project-osrm.org/"
+        "route/v1/driving/"
+        f"{start_lon},{start_lat};"
+        f"{end_lon},{end_lat}"
+    )
+
+    params = {
+        "alternatives": "true",
+        "overview": "full",
+        "geometries": "geojson",
+        "steps": "false"
+    }
+
+    try:
+
+        response = requests.get(
+            url,
+            params=params,
+            timeout=12
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        if data.get("code") != "Ok":
+            return None
+
+        routes = []
+
+        for route in data.get("routes", []):
+
+            routes.append({
+                "distance_km":
+                    round(
+                        route["distance"] / 1000,
+                        2
+                    ),
+
+                "duration_min":
+                    round(
+                        route["duration"] / 60,
+                        1
+                    ),
+
+                "geometry":
+                    route.get("geometry")
+            })
+
+        return routes
+
+    except Exception:
+        return None
+
+
+# =========================================================
+# HASTANE UYGUNLUK PUANI
+# =========================================================
+
+def hospital_score(
+    hospital,
+    duration_min,
+    distance_km
+):
+
+    # Daha düşük olması iyi olan değerler
+    time_score = max(
+        0,
+        100 - duration_min * 4
+    )
+
+    distance_score = max(
+        0,
+        100 - distance_km * 8
+    )
+
+    capacity_score = 100 - hospital["capacity"]
+
+    staff_score = 100 - hospital["staff_load"]
+
+    beds_score = min(
+        100,
+        hospital["beds_available"] / 2
+    )
+
+    score = (
+        time_score * 0.35
+        + distance_score * 0.15
+        + capacity_score * 0.20
+        + staff_score * 0.15
+        + beds_score * 0.15
+    )
+
+    return round(
+        max(0, min(100, score)),
+        2
     )
 
 
@@ -224,7 +359,8 @@ def index():
     return render_template(
         "index.html",
         hospitals=HOSPITALS,
-        ambulances=AMBULANCES
+        ambulances=AMBULANCES,
+        resource_types=RESOURCE_TYPES
     )
 
 
@@ -342,47 +478,97 @@ def ambulances():
 # TEK ROTA
 # =========================================================
 
-def get_osrm_route(
-    start_lat,
-    start_lon,
-    end_lat,
-    end_lon
-):
+@app.route(
+    "/route",
+    methods=["POST"]
+)
+def route():
 
-    url = (
-        "https://router.project-osrm.org/"
-        "route/v1/driving/"
-        f"{start_lon},{start_lat};"
-        f"{end_lon},{end_lat}"
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "error": "Rota bilgisi bulunamadı."
+        }), 400
+
+    try:
+
+        start_lat = float(
+            data["start_lat"]
+        )
+
+        start_lon = float(
+            data["start_lon"]
+        )
+
+        end_lat = float(
+            data["end_lat"]
+        )
+
+        end_lon = float(
+            data["end_lon"]
+        )
+
+    except (
+        KeyError,
+        ValueError,
+        TypeError
+    ):
+
+        return jsonify({
+            "error":
+                "Konum bilgileri geçersiz."
+        }), 400
+
+    routes = get_route(
+        start_lat,
+        start_lon,
+        end_lat,
+        end_lon
     )
 
-    params = {
-        "overview": "full",
-        "geometries": "geojson",
-        "steps": "true",
-        "alternatives": "true"
-    }
+    if not routes:
 
-    response = requests.get(
-        url,
-        params=params,
-        timeout=15
-    )
+        distance = haversine(
+            start_lat,
+            start_lon,
+            end_lat,
+            end_lon
+        )
 
-    response.raise_for_status()
+        estimated_time = (
+            distance / 45
+        ) * 60
 
-    return response.json()
+        return jsonify({
+            "source": "Tahmini",
+            "routes": [{
+                "distance_km":
+                    round(distance, 2),
+                "duration_min":
+                    round(
+                        estimated_time,
+                        1
+                    ),
+                "geometry": None
+            }]
+        })
+
+    return jsonify({
+        "source": "OSRM",
+        "routes": routes
+    })
 
 
 # =========================================================
-# AMBULANS → HASTANE ROTA ANALİZİ
+# EN UYGUN HASTANE
 # =========================================================
 
 @app.route(
-    "/hospital-recommendation",
+    "/recommend-hospital",
     methods=["POST"]
 )
-def hospital_recommendation():
+def recommend_hospital():
 
     data = request.get_json()
 
@@ -400,7 +586,8 @@ def hospital_recommendation():
     ambulance = next(
         (
             a for a in AMBULANCES
-            if a["id"] == ambulance_id
+            if str(a["id"]) ==
+            str(ambulance_id)
         ),
         None
     )
@@ -412,184 +599,196 @@ def hospital_recommendation():
                 "Ambulans bulunamadı."
         }), 404
 
-    if ambulance["status"] != "Müsait":
-
-        return jsonify({
-            "error":
-                "Seçilen ambulans şu anda görevde."
-        }), 400
-
-    candidates = []
+    hospital_results = []
 
     for hospital in HOSPITALS:
 
-        try:
+        routes = get_route(
+            ambulance["lat"],
+            ambulance["lon"],
+            hospital["lat"],
+            hospital["lon"]
+        )
 
-            route_data = get_osrm_route(
+        if routes:
+
+            best_route = min(
+                routes,
+                key=lambda r:
+                r["duration_min"]
+            )
+
+            duration = best_route[
+                "duration_min"
+            ]
+
+            distance = best_route[
+                "distance_km"
+            ]
+
+            geometry = best_route[
+                "geometry"
+            ]
+
+            route_source = "OSRM"
+
+        else:
+
+            distance = haversine(
                 ambulance["lat"],
                 ambulance["lon"],
                 hospital["lat"],
                 hospital["lon"]
             )
 
-            routes = route_data.get(
-                "routes",
-                []
-            )
+            duration = (
+                distance / 45
+            ) * 60
 
-            if not routes:
-                continue
+            geometry = None
+            route_source = "Tahmini"
 
-            best_route = min(
-                routes,
-                key=lambda r: r["duration"]
-            )
+        score = hospital_score(
+            hospital,
+            duration,
+            distance
+        )
 
-            duration_minutes = (
-                best_route["duration"] / 60
-            )
+        hospital_results.append({
 
-            distance_km = (
-                best_route["distance"] / 1000
-            )
+            "id":
+                hospital["id"],
 
-            # -------------------------------------------------
-            # HASTANE UYGUNLUK PUANI
-            #
-            # Süre          %45
-            # Boş yatak     %25
-            # Doluluk       %15
-            # Yorgunluk     %15
-            # -------------------------------------------------
+            "name":
+                hospital["name"],
 
-            time_score = max(
-                0,
-                100 - duration_minutes * 3
-            )
+            "distance_km":
+                round(distance, 2),
 
-            bed_score = min(
-                hospital["beds_available"] / 300 * 100,
-                100
-            )
+            "duration_min":
+                round(duration, 1),
 
-            occupancy_score = (
-                100 - hospital["capacity"]
-            )
+            "capacity":
+                hospital["capacity"],
 
-            fatigue_score = (
-                100 - hospital["fatigue"]
-            )
+            "staff_load":
+                hospital["staff_load"],
 
-            suitability = (
-                time_score * 0.45
-                + bed_score * 0.25
-                + occupancy_score * 0.15
-                + fatigue_score * 0.15
-            )
+            "beds_available":
+                hospital["beds_available"],
 
-            candidates.append({
+            "score":
+                score,
 
-                "hospital": hospital,
+            "route_source":
+                route_source,
 
-                "duration_minutes":
-                    round(
-                        duration_minutes,
-                        1
-                    ),
+            "geometry":
+                geometry,
 
-                "distance_km":
-                    round(
-                        distance_km,
-                        2
-                    ),
+            "reason": [
+                f"Ulaşım süresi: {round(duration, 1)} dakika",
+                f"Mesafe: {round(distance, 2)} km",
+                f"Hastane doluluğu: %{hospital['capacity']}",
+                f"Personel yükü: %{hospital['staff_load']}",
+                f"Boş yatak: {hospital['beds_available']}"
+            ]
+        })
 
-                "suitability":
-                    round(
-                        suitability,
-                        2
-                    ),
-
-                "route": best_route,
-
-                "alternatives":
-                    routes
-            })
-
-        except Exception as error:
-
-            print(
-                "Rota hatası:",
-                error
-            )
-
-    if not candidates:
-
-        return jsonify({
-            "error":
-                "Rota hesaplanamadı. Harita servisi şu anda kullanılamıyor."
-        }), 503
-
-    candidates.sort(
-        key=lambda x:
-            x["suitability"],
+    hospital_results.sort(
+        key=lambda x: x["score"],
         reverse=True
     )
 
-    best = candidates[0]
+    best = hospital_results[0]
 
     return jsonify({
 
-        "ambulance": ambulance,
+        "ambulance":
+            ambulance,
 
-        "recommended": best,
+        "recommended":
+            best,
 
-        "hospitals": candidates,
+        "hospitals":
+            hospital_results,
 
-        "message": (
-            f"{best['hospital']['name']} "
-            f"öneriliyor. Tahmini ulaşım "
-            f"süresi {best['duration_minutes']} dakika."
+        "message":
+            (
+                f"{best['name']} öneriliyor. "
+                f"Uygunluk puanı "
+                f"{best['score']}/100."
+            )
+    })
+
+
+# =========================================================
+# SAĞLIK DURUM ÖZETİ
+# =========================================================
+
+@app.route("/health-summary")
+def health_summary():
+
+    average_capacity = (
+        sum(
+            h["capacity"]
+            for h in HOSPITALS
         )
-    })
+        / len(HOSPITALS)
+    )
 
+    average_staff = (
+        sum(
+            h["staff_load"]
+            for h in HOSPITALS
+        )
+        / len(HOSPITALS)
+    )
 
-# =========================================================
-# SAĞLIK DURUMU
-# =========================================================
+    total_beds = sum(
+        h["beds_available"]
+        for h in HOSPITALS
+    )
 
-@app.route("/health")
-def health():
+    critical_hospitals = [
+        h["name"]
+        for h in HOSPITALS
+        if (
+            h["capacity"] >= 85
+            or h["staff_load"] >= 85
+        )
+    ]
 
     return jsonify({
-        "status": "ok",
-        "project": "Afet-X",
-        "version": "2.0"
+
+        "average_capacity":
+            round(
+                average_capacity,
+                1
+            ),
+
+        "average_staff_load":
+            round(
+                average_staff,
+                1
+            ),
+
+        "total_available_beds":
+            total_beds,
+
+        "critical_hospitals":
+            critical_hospitals
     })
 
 
 # =========================================================
-# UYGULAMAYI ÇALIŞTIR
+# ÇALIŞTIR
 # =========================================================
 
 if __name__ == "__main__":
 
-    port = 5000
-
-    try:
-        import os
-
-        port = int(
-            os.environ.get(
-                "PORT",
-                5000
-            )
-        )
-
-    except Exception:
-        pass
-
     app.run(
         host="0.0.0.0",
-        port=port,
-        debug=False
+        port=5000,
+        debug=True
     )
