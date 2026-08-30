@@ -1,35 +1,127 @@
-# 🚨 Afet-X Akıllı Kaynak Dağıtımı
+# 🚨 Afet-X
 
-Afet-X, afet bölgelerinde mevcut kaynakların ihtiyaçlara göre
-önceliklendirilmesine yardımcı olmak amacıyla geliştirilmiş
-Flask tabanlı bir karar destek sistemidir.
+## Akıllı Afet Kaynak ve Ambulans Karar Destek Sistemi
 
----
+Afet-X, afet sırasında sınırlı kaynakların doğru bölgelere
+yönlendirilmesine ve ambulansların uygun hastanelere
+ulaştırılmasına yardımcı olmak amacıyla geliştirilen
+bir karar destek sistemi prototipidir.
 
-## 🎯 Projenin Amacı
+## 🎯 Amaç
 
-Afet sonrasında kaynakların hangi bölgelere öncelikli olarak
-gönderilmesi gerektiğini belirlemek önemli bir problemdir.
+Afet anında karar verme sürecini hızlandırmak.
 
-Afet-X bu problemi üç temel kriter üzerinden ele alır:
+Sistem;
 
-- Afet Şiddeti
-- Nüfus
-- İhtiyaç Miktarı
+- Afet bölgelerini analiz eder.
+- Öncelik puanı oluşturur.
+- Kaynak dağılımı önerir.
+- Kritik bölgeleri belirler.
+- Hastanelerin kapasitesini gösterir.
+- Personel yükünü gösterir.
+- Ambulansları haritada gösterir.
+- Alternatif rotaları karşılaştırır.
+- Uygun hastane önerisi oluşturur.
 
-Bu kriterler belirlenen ağırlıklarla birleştirilerek her bölge
-için 0-100 arasında bir öncelik skoru hesaplanır.
+## 🧠 Afet Öncelik Modeli
 
----
+Afet şiddeti: %50
 
-## 🧮 Öncelik Skoru
+Nüfus: %20
 
-Sistemde kullanılan formül:
+İhtiyaç: %30
 
-```text
-Öncelik Skoru =
-(Afet Şiddeti × 0.50)
-+
-(Nüfus × 0.20)
-+
-(İhtiyaç Miktarı × 0.30)
+## 🚑 Ambulans Karar Sistemi
+
+Sistem ambulansın konumundan hastaneleri karşılaştırır.
+
+Değerlendirilen faktörler:
+
+- Tahmini ulaşım süresi
+- Hastane doluluk oranı
+- Personel yükü
+- Kullanılabilir yatak
+
+Sistem bu bilgiler üzerinden uygun hastaneyi önerir.
+
+## 🛣️ Rota Sistemi
+
+Prototipte OpenStreetMap tabanlı OSRM rota servisi
+kullanılmaktadır.
+
+Sistem alternatif güzergahları karşılaştırarak
+tahmini mesafe ve ulaşım süresini gösterir.
+
+## 🏥 Hastane Durumu
+
+Her hastane için:
+
+- Doluluk
+- Personel yükü/yorgunluk skoru
+- Kullanılabilir yatak
+
+gösterilir.
+
+> Personel yükü/yorgunluk değeri prototip verisidir.
+> Gerçek sistemde sağlık kuruluşlarından gelen
+> güncel verilerle güncellenmelidir.
+
+## 🗺️ Harita
+
+Haritada:
+
+- Ambulanslar
+- Hastaneler
+- Afet bölgeleri
+- Rotalar
+
+gösterilir.
+
+## 🛠️ Teknolojiler
+
+- Python
+- Flask
+- HTML
+- CSS
+- JavaScript
+- Leaflet
+- OpenStreetMap
+- OSRM
+- GitHub
+- Render
+
+## 📁 Proje Yapısı
+
+afet-x-akilli-kaynak-dagitimi/
+
+├── data/
+
+│   └── regions.csv
+
+├── templates/
+
+│   └── index.html
+
+├── app.py
+
+├── render.yaml
+
+├── requirements.txt
+
+├── README.md
+
+└── PROJECT_PLAN.md
+
+## 🚀 Gelecek Geliştirmeler
+
+- Gerçek zamanlı trafik
+- Gerçek yol kapanmaları
+- Gerçek hastane kapasite verileri
+- Gerçek ambulans konumları
+- Gerçek personel yükü verileri
+- Hava durumu
+- Deprem ve afet API'leri
+- İlaç ve tıbbi malzeme dağıtımı
+- Yapay zekâ ile tahmin
+- Hastane-hastane kaynak transferi
+- Mobil uygulama
